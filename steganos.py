@@ -14,6 +14,11 @@ def encode(bits: str, text: str):
     active_branchpoints = filter_by_bits(branchpoints, bits) 
     return execute_branchpoints(active_branchpoints, text)
 
+def decode(encoded_text: str, original_text: str):
+    branchpoints = get_all_branchpoints(original_text)
+    changes = functools.reduce(list.__add__, branchpoints)
+    changes.sort()
+
 def repeat(xs, length: int):
     return xs * int(length/ len(xs)) + xs[:length % len(xs)]
 
@@ -31,7 +36,7 @@ def make_changes(text: str, changes: list):
     changes.sort(reverse=True) 
     for change in changes:
         start, end, change_string = change
-        text = text[:start] + change_string + text[end + 1:]
+        text = text[:start] + change_string + text[end:]
     return text
 
 def get_all_branchpoints(text: str):
@@ -43,8 +48,8 @@ def get_all_branchpoints(text: str):
             close_quote_index = text.find('"', index + 1)    
             if close_quote_index != -1:
                 branchpoints.append([
-                    (index, index, "'"), 
-                    (close_quote_index, close_quote_index, "'")
+                    (index, index + 1, "'"), 
+                    (close_quote_index, close_quote_index + 1, "'")
                 ])
 
     return branchpoints 
