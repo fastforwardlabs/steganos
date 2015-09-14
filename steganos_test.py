@@ -87,12 +87,47 @@ def test_execute_branchpoints_when_one_is_sandwiched():
 
 def test_encode():
     # given
-    text = '"How is she?" he asked.'
+    text = '"I am nine." he said.'
+    bits = '01'
+
+    # when
+    result = steganos.encode(bits, text)
+
+    # then
+    assert result == '"I am nine." he said.'
+
+def test_encode_a_single_bit():
+    # given
+    text = '"I am nine." he said.'
     bits = '1'
 
     # when
     result = steganos.encode(bits, text)
 
     # then
-    assert result == "'How is she?' he asked."
+    assert result == "'I am nine.' he said."
+
+def test_decode():
+    # given
+    text = '"I am 9." he said.'
+    bits = '01'
+    encoded_text = steganos.encode(bits, text)
+
+    # when
+    result = steganos.decode(encoded_text, text)
+
+    # then
+    assert result == bits
+
+def test_decode_a_single_bit():
+    # given
+    text = '"I am 9." he said.'
+    bits = '1'
+    encoded_text = steganos.encode(bits, text)
+
+    # when
+    result = steganos.decode(encoded_text, text)
+
+    # then
+    assert result == '11'
 
