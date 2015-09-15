@@ -131,6 +131,15 @@ def test_decode_a_single_bit():
     # then
     assert result == '11'
 
+def test_decode_with_bad_origin():
+    # given
+    original_text = 'This is a sentence with a 9.'
+    encoded_text = 'This does not match with a 9.'
+
+    # then
+    with pytest.raises(Exception):
+        steganos.decode(encoded_text, original_text)
+
 def test_change_was_made():
     # given
     text1 = 'The dog can bark.'
