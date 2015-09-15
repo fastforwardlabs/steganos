@@ -48,7 +48,6 @@ def decode(encoded_text: str, original_text: str):
           
     return ''.join(bits)
 
-
 def repeat(xs, length: int):
     return xs * int(length/ len(xs)) + xs[:length % len(xs)]
 

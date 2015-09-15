@@ -87,7 +87,7 @@ def test_execute_branchpoints_when_one_is_sandwiched():
 
 def test_encode():
     # given
-    text = '"I am nine." he said.'
+    text = '"I am 9." he said.'
     bits = '01'
 
     # when
@@ -98,7 +98,7 @@ def test_encode():
 
 def test_encode_a_single_bit():
     # given
-    text = '"I am nine." he said.'
+    text = '"I am 9." he said.'
     bits = '1'
 
     # when
