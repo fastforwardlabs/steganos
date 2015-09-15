@@ -131,3 +131,39 @@ def test_decode_a_single_bit():
     # then
     assert result == '11'
 
+def test_change_was_made():
+    # given
+    text1 = 'The dog can bark.'
+    text2 = 'The dogs can bark.'
+    change = (4, 7, 'dogs')
+
+    # when
+    result = steganos.change_was_made(text1, text2, change)
+ 
+    # then
+    assert result
+    
+def test_change_was_not_made():
+    # given
+    text1 = 'The same string.'
+    text2 = 'The same string.'
+    change = (4, 8, 'different')
+
+    # when 
+    result = steganos.change_was_made(text1, text2, change)
+
+    # then 
+    assert not result
+
+def test_undo_change():
+    # given
+    original_text = 'I am 9 years old.'
+    encoded_text = 'I am nine years old.'
+    change = (5, 6, 'nine')
+
+    # when
+    result = steganos.undo_change(original_text, encoded_text, change)
+
+    # then
+    assert result == original_text
+
