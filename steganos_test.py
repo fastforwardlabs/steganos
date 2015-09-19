@@ -212,3 +212,14 @@ def test_get_tab_branchpoints(text, branchpoints):
     # then
     assert result == branchpoints
 
+def test_encoding_when_digits_appear_before_quotes():
+    # given
+    text = 'Chapter 9 - "Hello!"'
+    encoded_text = steganos.encode('10', text)
+
+    # when
+    result = steganos.decode(encoded_text, text)
+
+    # then
+    assert result == '10'
+

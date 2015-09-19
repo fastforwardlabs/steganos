@@ -80,18 +80,28 @@ def change_was_made(text1: str, text2: str, change: tuple):
     return text1[start:start + len(change_string)] != text2[start:start + len(change_string)]
 
 def get_all_branchpoints(text: str):
-    branchpoints = []
-    
+    # global
+    global_branchpoints = []
     quotes_branchpoint = get_global_single_quotes_branchpoint(text)
-    if quotes_branchpoint: branchpoints.append(quotes_branchpoint)
+    if quotes_branchpoint: global_branchpoints.append(quotes_branchpoint)
 
     digits_branchpoint = get_global_single_digit_branchpoint(text)
-    if digits_branchpoint: branchpoints.append(digits_branchpoint)
+    if digits_branchpoint: global_branchpoints.append(digits_branchpoint)
 
+    # sort global branchpoints by first appearance in text
+    def first_change(branchpoint: list):
+        return branchpoint[0][0]
+
+    global_branchpoints.sort(key=first_change)
+
+    # local
+    local_branchpoints = []
     tab_branchpoints = get_tab_branchpoints(text)
-    if tab_branchpoints: branchpoints += tab_branchpoints
+    if tab_branchpoints: local_branchpoints += tab_branchpoints
 
-    return branchpoints
+    local_branchpoints.sort(key=first_change)
+
+    return global_branchpoints + local_branchpoints
 
 def get_global_single_quotes_branchpoint(text: str):
     double_quote_indices = [m.start() for m in re.finditer('"', text)]
