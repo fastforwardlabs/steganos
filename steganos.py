@@ -8,7 +8,7 @@ A 'branchpoint' is a decision about the text that can be used to encode
 a single bit.  Each branch point is represented by a list of 'changes'.
 """
 import functools
-
+import re
 def encode(bits: str, text: str):
     branchpoints = get_all_branchpoints(text)
     repeated_bits = repeat(bits, len(branchpoints))
@@ -81,30 +81,27 @@ def change_was_made(text1: str, text2: str, change: tuple):
 
 def get_all_branchpoints(text: str):
     branchpoints = []
-    for index in range(len(text)):
 
-        # fragile sample branchpoints
-        if text[index] == '"':
-            close_quote_index = text.find('"', index + 1)    
-            if close_quote_index != -1:
-                branchpoints.append([
-                    (index, index + 1, "'"), 
-                    (close_quote_index, close_quote_index + 1, "'")
-                ])
-        
-        numbers = {
-                '9': 'nine',
-                '8': 'eight', 
-                '7': 'seven',
-                '6': 'six',
-                '5': 'five',
-                '4': 'four',
-                '3': 'three',
-                '2': 'two', 
-                '1': 'one'
-        }
-        if text[index] in numbers:
-            branchpoints.append([(index, index + 1, numbers[text[index]])])
+    # global double -> single quotes branchpoint
+    double_quote_indices = [match.start() for match in re.finditer('"', text)]
+    branchpoint = [(index, index + 1, "'") for index in double_quote_indices]
+    if branchpoint: branchpoints.append(branchpoint)
+    
+    # global single digit numeric -> word branchpoint
+    numbers = {
+            '9': 'nine',
+            '8': 'eight', 
+            '7': 'seven',
+            '6': 'six',
+            '5': 'five',
+            '4': 'four',
+            '3': 'three',
+            '2': 'two', 
+            '1': 'one'
+    }
+    single_digit_indices = [match.start() for match in re.finditer('\d', text)]
+    branchpoint = [(index, index + 1, numbers[text[index]]) for index in single_digit_indices]
+    if branchpoint: branchpoints.append(branchpoint)
 
     return branchpoints 
 
