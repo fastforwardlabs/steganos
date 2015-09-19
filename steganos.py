@@ -81,13 +81,20 @@ def change_was_made(text1: str, text2: str, change: tuple):
 
 def get_all_branchpoints(text: str):
     branchpoints = []
-
-    # global double -> single quotes branchpoint
-    double_quote_indices = [match.start() for match in re.finditer('"', text)]
-    branchpoint = [(index, index + 1, "'") for index in double_quote_indices]
-    if branchpoint: branchpoints.append(branchpoint)
     
-    # global single digit numeric -> word branchpoint
+    quotes_branchpoint = get_global_single_quotes_branchpoint(text)
+    if quotes_branchpoint: branchpoints.append(quotes_branchpoint)
+
+    digits_branchpoint = get_global_single_digit_branchpoint(text)
+    if digits_branchpoint: branchpoints.append(digits_branchpoint)
+
+    return branchpoints
+
+def get_global_single_quotes_branchpoint(text: str):
+    double_quote_indices = [m.start() for m in re.finditer('"', text)]
+    return [(index, index + 1, "'") for index in double_quote_indices]
+
+def get_global_single_digit_branchpoint(text: str):
     numbers = {
             '9': 'nine',
             '8': 'eight', 
@@ -99,9 +106,5 @@ def get_all_branchpoints(text: str):
             '2': 'two', 
             '1': 'one'
     }
-    single_digit_indices = [match.start() for match in re.finditer('\d', text)]
-    branchpoint = [(index, index + 1, numbers[text[index]]) for index in single_digit_indices]
-    if branchpoint: branchpoints.append(branchpoint)
-
-    return branchpoints 
-
+    single_digit_indices = [m.start() for m in re.finditer('(?<!\d)[1-9](?!\d)', text)]
+    return [(index, index + 1, numbers[text[index]]) for index in single_digit_indices]
