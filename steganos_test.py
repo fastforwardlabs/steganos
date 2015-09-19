@@ -200,3 +200,15 @@ def test_get_global_single_digit_branchpoint(text, branchpoint):
     # then
     assert result == branchpoint
 
+@pytest.mark.parametrize('text, branchpoints', [
+    ('\tHello.', [[(0, 1, '    ')]]),
+    ('\tHello.\t', [[(0, 1, '    ')], [(7, 8, '    ')]]),
+    ('No tabs!', [])
+])
+def test_get_tab_branchpoints(text, branchpoints):
+    # when
+    result = steganos.get_tab_branchpoints(text)
+
+    # then
+    assert result == branchpoints
+

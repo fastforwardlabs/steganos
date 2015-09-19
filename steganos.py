@@ -88,6 +88,9 @@ def get_all_branchpoints(text: str):
     digits_branchpoint = get_global_single_digit_branchpoint(text)
     if digits_branchpoint: branchpoints.append(digits_branchpoint)
 
+    tab_branchpoints = get_tab_branchpoints(text)
+    if tab_branchpoints: branchpoints += tab_branchpoints
+
     return branchpoints
 
 def get_global_single_quotes_branchpoint(text: str):
@@ -108,3 +111,7 @@ def get_global_single_digit_branchpoint(text: str):
     }
     single_digit_indices = [m.start() for m in re.finditer('(?<!\d)[1-9](?!\d)', text)]
     return [(index, index + 1, numbers[text[index]]) for index in single_digit_indices]
+
+def get_tab_branchpoints(text: str):
+    tab_indices = [m.start() for m in re.finditer('\t', text)]
+    return [[(tab_index, tab_index + 1, '    ')] for tab_index in tab_indices]
