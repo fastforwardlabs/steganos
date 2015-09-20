@@ -7,7 +7,7 @@ import pytest
     (2, 'ab')
 ])
 def test_repeated_string(length, expected):
-    assert expected == steganos.repeat('abc', length) 
+    assert expected == steganos.repeat('abc', length)
 
 @pytest.mark.parametrize('length, expected', [
     (3, ['a', 'b', 'c']),
@@ -15,31 +15,31 @@ def test_repeated_string(length, expected):
     (2, ['a', 'b'])
 ])
 def test_repeated_list(length, expected):
-    assert expected == steganos.repeat(['a', 'b', 'c'], length) 
+    assert expected == steganos.repeat(['a', 'b', 'c'], length)
 
 def test_get_all_branchpoints_finds_matching_quotes():
     # given
     text = '"Hello," he said.'
 
-    # when 
+    # when
     result = steganos.get_all_branchpoints(text)
 
     # then
-    assert result == [[(0, 1, "'"), (7, 8, "'")]]
+    assert [(0, 1, "'"), (7, 8, "'")] in result
 
 def test_filter_by_bits():
     # given
     bits = '101'
     xs = ['a', 'b', 'c']
 
-    # when 
+    # when
     result = steganos.filter_by_bits(xs, bits)
 
     # then
     assert result == ['a', 'c']
 
 def test_make_change_for_single_change():
-    # given 
+    # given
     text = 'This is his dog.'
     changes = [(9, 11, 'er')]
 
@@ -72,14 +72,14 @@ def test_make_changes_when_change_is_different_length():
     assert result == 'It is just a sample text.'
 
 def test_execute_branchpoints_when_one_is_sandwiched():
-    # given 
+    # given
     text = '"How is she?" he asked.'
     branchpoints = [
         [(0, 1, "'"), (12, 13, "'")],
         [(8, 9, '')]
     ]
 
-    # when 
+    # when
     result = steganos.execute_branchpoints(branchpoints, text)
 
     # then
@@ -114,7 +114,7 @@ def test_decode():
     encoded_text = steganos.encode(bits, text)
 
     # when
-    result = steganos.decode(encoded_text, text)
+    result = steganos.decode_full_text(encoded_text, text)
 
     # then
     assert result == bits
@@ -126,7 +126,7 @@ def test_decode_a_single_bit():
     encoded_text = steganos.encode(bits, text)
 
     # when
-    result = steganos.decode(encoded_text, text)
+    result = steganos.decode_full_text(encoded_text, text)
 
     # then
     assert result == '11'
@@ -138,7 +138,7 @@ def test_decode_with_bad_origin():
 
     # then
     with pytest.raises(Exception):
-        steganos.decode(encoded_text, original_text)
+        steganos.decode_full_text(encoded_text, original_text)
 
 def test_change_was_made():
     # given
@@ -148,20 +148,20 @@ def test_change_was_made():
 
     # when
     result = steganos.change_was_made(text1, text2, change)
- 
+
     # then
     assert result
-    
+
 def test_change_was_not_made():
     # given
     text1 = 'The same string.'
     text2 = 'The same string.'
     change = (4, 8, 'different')
 
-    # when 
+    # when
     result = steganos.change_was_made(text1, text2, change)
 
-    # then 
+    # then
     assert not result
 
 def test_undo_change():
@@ -171,7 +171,7 @@ def test_undo_change():
     change = (5, 6, 'nine')
 
     # when
-    result = steganos.undo_change(original_text, encoded_text, change)
+    result = steganos.undo_change(encoded_text, original_text, change)
 
     # then
     assert result == original_text
@@ -218,8 +218,64 @@ def test_encoding_when_digits_appear_before_quotes():
     encoded_text = steganos.encode('10', text)
 
     # when
-    result = steganos.decode(encoded_text, text)
+    result = steganos.decode_full_text(encoded_text, text)
 
     # then
     assert result == '10'
+
+def test_get_indices_of_encoded_text():
+    # given
+    text = 'Chapter 9 - "Hello!", Chapter 10 - "Goodbye!"'
+    encoded_text = "Chapter nine - 'Hello!'"
+
+    # when
+    start, end = steganos.get_indices_of_encoded_text(encoded_text, text)
+
+    # then
+    # for now, just check that it's in the right ballpark
+    assert abs(start - 0) < 5 and abs(end - 20) - 5
+
+def test_when_global_change_out_of_encoded_text():
+    # given
+    text = 'I am 9, but I say "I am 8".'
+    encoded_text = steganos.encode('11', text)
+
+    # when
+    result = steganos.decode_partial_text(encoded_text[0:9], text, (0, 6))
+
+    # then
+    assert result == '?1'
+
+def test_local_changes_appear_after_global_changes_in_decoded_bits():
+    # given
+    text = 'I am 9\t, but I say "I am 8".'
+    encoded_text = steganos.encode('111', text)
+
+    # when
+    result = steganos.decode_partial_text(encoded_text[0:15], text, (0, 9))
+
+    # then
+    assert result == '?11'
+
+def test_global_change_late_in_encoded_text_with_negative_indices():
+    # given
+    text = 'I am 9\t, but I say "I am 8".'
+    encoded_text = steganos.encode('111', text)
+
+    # when
+    result = steganos.decode_partial_text(encoded_text[-9:-1], text, (-5, -1))
+
+    # then
+    assert result == '11?'
+
+def test_global_change_late_in_encoded_text():
+    # given
+    text = 'I am 9\t, but I say "I am 8."'
+    encoded_text = steganos.encode('111', text)
+
+    # when
+    result = steganos.decode_partial_text(encoded_text[30:], text, (24, 28))
+
+    # then
+    assert result == '11?'
 
