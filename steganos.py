@@ -11,16 +11,63 @@ import functools
 import re
 
 def encode(bits: str, text: str):
+    """
+    Encodes the provided bits into the given text.
+
+    Sample usage:
+
+    >> original_text = '"Some string" has 2 words.'
+    >> encoded_text = steganos.encode('11', original_text)
+    >> print(encoded_text)
+    'Some string' has two words.
+
+
+    Encoded bits can be retrieved using one of the decode functions below.
+
+    Sample usage:
+
+    >> result = steganos.decode_full_text(encoded_text, original_text)
+    >> print(result)
+    11
+
+    :param bits: A string made up of '0' and '1' characters
+                 representing the bits to encode.
+    :param text: The string within which to encode the bits.
+
+    :return: A string based on input text into which the
+             given bits are encoded.
+    """
     branchpoints = get_all_branchpoints(text)
     repeated_bits = repeat(bits, len(branchpoints))
     active_branchpoints = filter_by_bits(branchpoints, repeated_bits)
     return execute_branchpoints(active_branchpoints, text)
 
 def decode_full_text(encoded_text: str, original_text: str):
+    """
+    Decodes bits from encoded text. Use this function if you have
+    the full encoded text, otherwise use decode_partial_text function.
+
+    :param encoded_text: A string that has been encoded with information.
+    :param original_text: The text before encoding.
+    :return: The bits decoded from the text.
+    """
     encoded_range = (0, len(original_text))
     return decode_partial_text(encoded_text, original_text, encoded_range)
 
 def decode_partial_text(encoded_text: str, original_text: str, encoded_range: tuple = None):
+    """
+    Decodes bits from encoded text. Use this function if you do not have
+    the full partial text.
+
+    :param encoded_text: A part of a text that has been encoded.
+    :param original_text: The complete text before encoding.
+    :param encoded_range (Optional): A tuple of length two.
+                         The first and second element represent the start
+                         and end indices of the piece of the original text
+                         that map to the partial encoded text. If this
+                         parametere is not provided, it will be inferred.
+    :return: The bits decoded from the text.
+    """
     start, end = encoded_range or get_indices_of_encoded_text(encoded_text, original_text)
 
     if start < 0: start = len(original_text) + start
