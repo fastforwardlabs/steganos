@@ -55,7 +55,8 @@ def decode_full_text(encoded_text: str, original_text: str):
 
     :param encoded_text: A string that has been encoded with information.
     :param original_text: The text before encoding.
-    :return: The bits decoded from the text.
+    :return: The bits decoded from the text. Unretrievable bits are
+             returned as question marks.
     """
     encoded_range = (0, len(original_text))
     return decode_partial_text(encoded_text, original_text, encoded_range)
@@ -72,7 +73,8 @@ def decode_partial_text(encoded_text: str, original_text: str, encoded_range: tu
                          and end indices of the piece of the original text
                          that map to the partial encoded text. If this
                          parametere is not provided, it will be inferred.
-    :return: The bits decoded from the text.
+    :return: The bits decoded from the text. Unretrievable bits are
+             returned as question marks.
     """
     start, end = encoded_range or get_indices_of_encoded_text(encoded_text, original_text)
 
