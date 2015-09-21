@@ -10,6 +10,12 @@ a single bit.  Each branch point is represented by a list of 'changes'.
 import functools
 import re
 
+def bit_capacity(text: str):
+    """
+    Returns the number of bits that can be encoded in a given string.
+    """
+    return len(get_all_branchpoints(text))
+
 def encode(bits: str, text: str):
     """
     Encodes the provided bits into the given text.

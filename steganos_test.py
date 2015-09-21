@@ -279,3 +279,13 @@ def test_global_change_late_in_encoded_text():
     # then
     assert result == '11?'
 
+def test_bit_capacity():
+    # given
+    text = 'I am 9\t, but I say "I am 8."'
+
+    # when
+    result = steganos.bit_capacity(text)
+
+    # then
+    assert result == 3
+
