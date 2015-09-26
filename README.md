@@ -16,7 +16,7 @@ capacity = steganos.bit_capacity(some_text)
 To encode bits into a string:
 
 ```.py
-import steganos 
+import steganos
 
 bits = '101'
 some_text = '"Hello," he said.\n\t"I am 9 years old"'
@@ -38,7 +38,7 @@ encoded_text = steganos.encode(bits, some_text)
 recovered_bits = steganos.decode_full_text(encoded_text, original_text)  # recovered_bits == '101'
 ```
 
-If you have on part of the encoded text, you can use the decode_partial_text function.  If you know the indices of the _original text_ that the partial encoded text corresponds to, you can pass those in as a tuple (start_index, end_index) as the final parameter.  Otherwise, they will be inferred.  The mechanism for inferring the start and end indices is very unreliable for now and needs to be improved.
+If you have on part of the encoded text, you can use the decode_partial_text function.  If you know the indices of the _original text_ that the partial encoded text corresponds to, you can pass those in as a tuple (start_index, end_index) as the final parameter.  Otherwise, they will be inferred.
 
 ```.py
 import steganos
@@ -47,11 +47,10 @@ bits = '101'
 some_text = '"Hello," he said.\n\t"I am 9 years old"'
 encoded_text = steganos.encode(bits, some_text)
 partial_text = encoded_text[2:8]
-recovered_bits = steganos.decode_partial_text(encoded_text, original_text)  
+recovered_bits = steganos.decode_partial_text(encoded_text, original_text)
 ```
 
 ## TODO
-- Improve the function for getting the indices of a partial encoded text.
 - Add additional global and local branchpoints.
 - Include unicode branchpoints for additional capacity.
 

@@ -111,20 +111,27 @@ def decode_partial_text(encoded_text: str, original_text: str, encoded_range: tu
     return ''.join(bits)
 
 def get_indices_of_encoded_text(encoded_text: str, original_text: str):
-    # TODO: improve robustness and accuracy
+    branchpoints = get_all_branchpoints(original_text)
+    changes = sum(branchpoints, [])
+    changes.sort()
 
-    num_consecutive_matches_needed = int((len(encoded_text) - 1) / 4)
+    for start in range(len(original_text)):
+        for end in range(start, len(original_text)):
+            encoded_copy = encoded_text
+            partial_text = original_text[start:end]
+            partial_changes = [c for c in changes if c[0] >= start and c[0] < end]
+            partial_changes = [(c[0] - start, c[1] - start, c[2]) for c in partial_changes]
 
-    for i in range(len(original_text)):
-        for j in range(len(encoded_text)):
-            if original_text[i] == encoded_text[j]:
-                for k in range(num_consecutive_matches_needed):
-                    if original_text[i + k] != encoded_text[j + k]:
-                        break
-                    if k == num_consecutive_matches_needed - 1:
-                        return (i - j, i - j + len(encoded_text))
-
-    return (-1, -1)
+            try:
+                for change in partial_changes:
+                    if change_was_made(encoded_copy, partial_text, change):
+                        encoded_copy = undo_change(encoded_copy, partial_text, change)
+                if encoded_copy == partial_text:
+                    return (start, end)
+                else:
+                    continue
+            except:
+                break
 
 def repeat(xs, length: int):
     return xs * int(length/ len(xs)) + xs[:length % len(xs)]
@@ -160,6 +167,11 @@ def undo_change(encoded_text: str, original_text: str, change: tuple):
 
 def change_was_made(text1: str, text2: str, change: tuple):
     start, _, change_string = change
+
+    if text1[:start] != text2[:start]:
+        raise ValueError('encoded_text and original_text are ' +
+                   'expected to be identical up to the change')
+
     return text1[start:start + len(change_string)] != text2[start:start + len(change_string)]
 
 def get_all_branchpoints(text: str):

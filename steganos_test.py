@@ -223,17 +223,38 @@ def test_encoding_when_digits_appear_before_quotes():
     # then
     assert result == '10'
 
-def test_get_indices_of_encoded_text():
+def test_get_indices_of_encoded_text_when_text_is_at_start():
     # given
     text = 'Chapter 9 - "Hello!", Chapter 10 - "Goodbye!"'
     encoded_text = "Chapter nine - 'Hello!'"
 
     # when
-    start, end = steganos.get_indices_of_encoded_text(encoded_text, text)
+    result  = steganos.get_indices_of_encoded_text(encoded_text, text)
 
     # then
-    # for now, just check that it's in the right ballpark
-    assert abs(start - 0) < 5 and abs(end - 20) - 5
+    assert result == (0, 20)
+
+def test_get_indices_when_encoded_text_not_at_start():
+    # given
+    text = 'Chapter 9 - "Hello!", Chapter 8 - "Goodbye!"'
+    encoded_text = 'nine - "Hello!", Chapter eight'
+
+    # when
+    result = steganos.get_indices_of_encoded_text(encoded_text, text)
+
+    # then
+    assert result == (8, 31)
+
+def test_get_indices_when_change_is_not_start_of_encoded_text():
+    # given
+    text = 'Chapter 9 - "Hello!", Chapter 10 - "Goodbye!"'
+    encoded_text = " - 'Hello!', Chapter "
+
+    # when
+    result = steganos.get_indices_of_encoded_text(encoded_text, text)
+
+    # then
+    assert result == (9, 30)
 
 def test_when_global_change_out_of_encoded_text():
     # given
