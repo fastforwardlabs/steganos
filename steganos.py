@@ -7,7 +7,6 @@ the change, and the third element is the string that will replace it.
 A 'branchpoint' is a decision about the text that can be used to encode
 a single bit.  Each branch point is represented by a list of 'changes'.
 """
-import functools
 import re
 
 def bit_capacity(text: str):
@@ -90,7 +89,7 @@ def decode_partial_text(encoded_text: str, original_text: str, encoded_range: tu
     branchpoints = [update_changes(bp) for bp in branchpoints]
 
     # changes have to be reverted in order so indices remain accurate
-    changes = functools.reduce(list.__add__, branchpoints, [])
+    changes = sum(branchpoints, [])
     changes.sort()
 
     bits = ['?'] * len(branchpoints)
@@ -134,7 +133,7 @@ def filter_by_bits(xs, bits: str):
     return [x for x, flag in zip(xs, bits) if flag == '1']
 
 def execute_branchpoints(branchpoints: list, text: str):
-    changes = functools.reduce(list.__add__, branchpoints, [])
+    changes = sum(branchpoints, [])
     return make_changes(text, changes)
 
 def make_changes(text: str, changes: list):
