@@ -256,6 +256,18 @@ def test_get_indices_when_change_is_not_start_of_encoded_text():
     # then
     assert result == (9, 30)
 
+def test_get_indices_when_end_is_mid_change():
+    # given
+    text = 'Chapter 9 - "Hello!", Chapter 8 - "Goodbye!"'
+    encoded_text = " - 'Hello!', Chapter eig"
+
+    # when
+    result = steganos.get_indices_of_encoded_text(encoded_text, text)
+
+    # then
+    assert result == (9, 31)
+
+    
 def test_when_global_change_out_of_encoded_text():
     # given
     text = 'I am 9, but I say "I am 8".'
