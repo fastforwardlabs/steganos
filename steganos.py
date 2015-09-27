@@ -127,7 +127,7 @@ def get_indices_of_encoded_text(encoded_text: str, original_text: str):
     changes.sort()
 
     for start in range(len(original_text)):
-        for end in range(start, len(original_text)):
+        for end in range(start, len(original_text) + 1):
             partial_text = original_text[start:end]
             partial_changes = reindex_changes(changes, start)
             partial_changes = get_changes_up_to_index(partial_changes, end - start)
@@ -179,17 +179,30 @@ def undo_change(encoded_text: str, original_text: str, change: tuple):
 
     beginning = encoded_text[:start]
     original_string = original_text[start:end]
-    remainder = encoded_text[start + len(change_string):]
+
+    remainder = ''
+    if start == 0 and change_string not in encoded_text:
+        # encoded text starts midway through a change
+        for i in range(2, len(change_string)):
+            if encoded_text[:i] not in change_string:
+                remainder_start = i - 1
+                remainder = encoded_text[remainder_start:]
+                break
+
+    if not remainder:
+        remainder = encoded_text[start + len(change_string):]
+
     return beginning + original_string + remainder
 
-def change_was_made(text1: str, text2: str, change: tuple):
+def change_was_made(encoded_text: str, original_text: str, change: tuple):
     start, _, change_string = change
 
-    if text1[:start] != text2[:start]:
+    if encoded_text[:start] != original_text[:start]:
         raise ValueError('encoded_text and original_text are ' +
                    'expected to be identical up to the change')
 
-    return text1[start:start + len(change_string)] != text2[start:start + len(change_string)]
+    end_change = start + len(change_string)
+    return encoded_text[start:end_change] != original_text[start:end_change]
 
 def get_all_branchpoints(text: str):
     return get_global_branchpoints(text) + get_local_branchpoints(text)
@@ -212,6 +225,9 @@ def get_local_branchpoints(text: str):
 
     tab_branchpoints = get_tab_branchpoints(text)
     if tab_branchpoints: local_branchpoints += tab_branchpoints
+
+    contraction_branchpoints = get_contraction_branchpoints(text)
+    if contraction_branchpoints: local_branchpoints += contraction_branchpoints
 
     # TODO: add more local branchpoints
 
@@ -248,4 +264,15 @@ def get_global_single_digit_branchpoint(text: str):
 def get_tab_branchpoints(text: str):
     tab_indices = [m.start() for m in re.finditer('\t', text)]
     return [[(tab_index, tab_index + 1, '    ')] for tab_index in tab_indices]
+
+def get_contraction_branchpoints(text: str):
+    contractions = {
+            "won't": 'will not'
+    }
+    branchpoints = []
+    for contraction, long_form in contractions.items():
+       index = text.find(contraction)
+       if index > -1:
+           branchpoints.append([(index, index + len(contraction), long_form)])
+    return branchpoints
 

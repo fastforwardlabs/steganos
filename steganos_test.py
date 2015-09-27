@@ -142,8 +142,8 @@ def test_decode_with_bad_origin():
 
 def test_change_was_made():
     # given
-    text1 = 'The dog can bark.'
-    text2 = 'The dogs can bark.'
+    text1 = 'The dogs can bark.'
+    text2 = 'The dog can bark.'
     change = (4, 7, 'dogs')
 
     # when
@@ -256,7 +256,7 @@ def test_get_indices_when_change_is_not_start_of_encoded_text():
     # then
     assert result == (9, 30)
 
-def test_get_indices_when_end_is_mid_change():
+def test_get_indices_when_end_is_mid_change_in_encoded():
     # given
     text = 'Chapter 9 - "Hello!", Chapter 8 - "Goodbye!"'
     encoded_text = " - 'Hello!', Chapter eig"
@@ -267,7 +267,50 @@ def test_get_indices_when_end_is_mid_change():
     # then
     assert result == (9, 31)
 
-    
+def test_get_indices_when_start_is_mid_change_in_original():
+    # given
+    text = "I won't do it."
+    encoded_text = "not do it."
+
+    # when
+    result = steganos.get_indices_of_encoded_text(encoded_text, text)
+
+    # then
+    assert result == (2, 14)
+
+def test_get_indices_when_end_is_mid_change_in_original():
+    # given
+    text = "I won't."
+    encoded_text = "I will"
+
+    # when
+    result = steganos.get_indices_of_encoded_text(encoded_text, text)
+
+    # then
+    assert result == (0, 7)
+
+def test_get_indices_when_start_is_mid_unchanged_change_in_original():
+    # given
+    text = "I won't turn 9."
+    encoded_text = "n't turn nine."
+
+    # when
+    result = steganos.get_indices_of_encoded_text(encoded_text, text)
+
+    # then
+    assert result == (4, 15)
+
+def test_get_indices_when_end_is_mid_unchanged_change_in_original():
+    # given
+    text = "I won't turn 9."
+    encoded_text = "I wo"
+
+    # when
+    result = steganos.get_indices_of_encoded_text(encoded_text, text)
+
+    # then
+    assert result == (0, 4)
+
 def test_when_global_change_out_of_encoded_text():
     # given
     text = 'I am 9, but I say "I am 8".'
@@ -321,4 +364,14 @@ def test_bit_capacity():
 
     # then
     assert result == 3
+
+def test_contraction_branchpoints():
+    # given
+    text = "I won't do it."
+
+    # when
+    result = steganos.get_local_branchpoints(text)
+
+    # then
+    assert [(2, 7, 'will not')] in result
 
