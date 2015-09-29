@@ -107,7 +107,7 @@ def test_encode_a_single_bit():
     # then
     assert result == "'I am nine.' he said."
 
-def test_encode_too_many_bits():
+def test_raises_when_given_too_many_bits_for_text():
     # given
     text = '9'
     bits = '110'
