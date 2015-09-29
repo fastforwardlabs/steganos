@@ -184,6 +184,8 @@ def undo_change(encoded_text: str, original_text: str, change: tuple):
     if start == 0 and change_string not in encoded_text:
         # encoded text starts midway through a change
         for i in range(2, len(change_string)):
+            # start at 2 because if the first difference is at index 0
+            # then change was not made
             if encoded_text[:i] not in change_string:
                 remainder_start = i - 1
                 remainder = encoded_text[remainder_start:]
