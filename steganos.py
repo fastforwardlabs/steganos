@@ -41,6 +41,7 @@ def encode(bits: str, text: str):
 
     :return: A string based on input text into which the
              given bits are encoded.
+    :raises: ValueError if given too many bits to encode into text.
     """
     branchpoints = get_all_branchpoints(text)
 
