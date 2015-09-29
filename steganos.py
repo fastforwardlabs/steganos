@@ -145,8 +145,6 @@ def get_indices_of_encoded_text(encoded_text: str, original_text: str):
 
             if unencoded_text == partial_text:
                 return (start, end)
-            else:
-                continue
 
     raise ValueError('The encoded and original texts do not seem to match')
 
