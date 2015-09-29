@@ -43,6 +43,11 @@ def encode(bits: str, text: str):
              given bits are encoded.
     """
     branchpoints = get_all_branchpoints(text)
+
+    if len(branchpoints) < len(bits):
+        raise ValueError('Attempting to encode %d bits in a text with a bit capacity of %d.'
+                         % (len(bits), len(branchpoints)))
+
     repeated_bits = repeat(bits, len(branchpoints))
     active_branchpoints = filter_by_bits(branchpoints, repeated_bits)
     return execute_branchpoints(active_branchpoints, text)

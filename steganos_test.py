@@ -107,6 +107,17 @@ def test_encode_a_single_bit():
     # then
     assert result == "'I am nine.' he said."
 
+def test_encode_too_many_bits():
+    # given
+    text = '9'
+    bits = '110'
+
+    # then
+    with pytest.raises(ValueError) as execinfo:
+        steganos.encode(bits, text)
+
+    assert str(len(text)) in str(execinfo.value) and str(len(bits)) in str(execinfo.value)
+
 def test_decode():
     # given
     text = '"I am 9." he said.'
