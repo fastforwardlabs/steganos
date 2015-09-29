@@ -148,7 +148,7 @@ def test_decode_with_bad_origin():
     encoded_text = 'This does not match with a 9.'
 
     # then
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         steganos.decode_full_text(encoded_text, original_text)
 
 def test_change_was_made():

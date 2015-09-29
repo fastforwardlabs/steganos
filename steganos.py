@@ -45,7 +45,7 @@ def encode(bits: str, text: str):
     branchpoints = get_all_branchpoints(text)
 
     if len(branchpoints) < len(bits):
-        raise ValueError('Attempting to encode %d bits in a text with a bit capacity of %d.'
+        raise ValueError('Attempting to encode %d bits into a text with a bit capacity of %d.'
                          % (len(bits), len(branchpoints)))
 
     repeated_bits = repeat(bits, len(branchpoints))
