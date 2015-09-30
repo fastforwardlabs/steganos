@@ -98,9 +98,6 @@ def get_bits(encoded_text: str, original_text: str, branchpoints: list, changes:
     bits = ['?'] * len(branchpoints)
     for change in changes:
         index = branchpoints.index(next(bp for bp in branchpoints if change in bp))
-        if bits[index] == '0':
-            continue
-
         if bits[index] == '?':
             bits[index] = '1' if change_was_made(encoded_text, original_text, change) else '0'
 
