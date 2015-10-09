@@ -109,14 +109,15 @@ def test_encode_a_single_bit():
 
 def test_encode_raises_when_given_too_many_bits_for_text():
     # given
-    text = '9'
+    text = '9 and some more text'
     bits = '110'
 
     # then
     with pytest.raises(ValueError) as execinfo:
         steganos.encode(bits, text)
 
-    assert str(len(text)) in str(execinfo.value) and str(len(bits)) in str(execinfo.value)
+    assert (str(steganos.bit_capacity(text)) in str(execinfo.value)
+            and str(len(bits)) in str(execinfo.value))
 
 def test_decode():
     # given
