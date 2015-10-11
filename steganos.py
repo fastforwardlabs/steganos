@@ -8,6 +8,8 @@ A 'branchpoint' is a decision about the text that can be used to encode
 a single bit.  Each branch point is represented by a list of 'changes'.
 """
 import re
+import local_branchpoints
+import global_branchpoints
 
 def bit_capacity(text: str):
     """
@@ -211,71 +213,37 @@ def get_all_branchpoints(text: str):
     return get_global_branchpoints(text) + get_local_branchpoints(text)
 
 def get_global_branchpoints(text: str):
-    global_branchpoints = []
+    branchpoints = []
 
-    quotes_branchpoint = get_global_single_quotes_branchpoint(text)
-    if quotes_branchpoint: global_branchpoints.append(quotes_branchpoint)
+    quotes_branchpoint = global_branchpoints.get_single_quotes_branchpoint(text)
+    if quotes_branchpoint: branchpoints.append(quotes_branchpoint)
 
-    digits_branchpoint = get_global_single_digit_branchpoint(text)
-    if digits_branchpoint: global_branchpoints.append(digits_branchpoint)
+    digits_branchpoint = global_branchpoints.get_single_digit_branchpoint(text)
+    if digits_branchpoint: branchpoints.append(digits_branchpoint)
 
     # TODO: add more global branchpoints
 
-    return global_branchpoints
+    return branchpoints
 
 def get_local_branchpoints(text: str):
-    local_branchpoints = []
+    branchpoints = []
 
-    tab_branchpoints = get_tab_branchpoints(text)
-    if tab_branchpoints: local_branchpoints += tab_branchpoints
+    tab_branchpoints = local_branchpoints.get_tab_branchpoints(text)
+    if tab_branchpoints: branchpoints += tab_branchpoints
 
-    contraction_branchpoints = get_contraction_branchpoints(text)
-    if contraction_branchpoints: local_branchpoints += contraction_branchpoints
+    contraction_branchpoints = local_branchpoints.get_contraction_branchpoints(text)
+    if contraction_branchpoints: branchpoints += contraction_branchpoints
 
     # TODO: add more local branchpoints
 
     # make sure each branchpoint is ordered by earliest change first
-    for bp in local_branchpoints:
+    for bp in branchpoints:
         bp.sort()
 
     def first_change(branchpoint: list):
         return branchpoint[0][0]
 
-    local_branchpoints.sort(key=first_change)
+    branchpoints.sort(key=first_change)
 
-    return local_branchpoints
-
-def get_global_single_quotes_branchpoint(text: str):
-    double_quote_indices = [m.start() for m in re.finditer('"', text)]
-    return [(index, index + 1, "'") for index in double_quote_indices]
-
-def get_global_single_digit_branchpoint(text: str):
-    numbers = {
-            '9': 'nine',
-            '8': 'eight',
-            '7': 'seven',
-            '6': 'six',
-            '5': 'five',
-            '4': 'four',
-            '3': 'three',
-            '2': 'two',
-            '1': 'one'
-    }
-    single_digit_indices = [m.start() for m in re.finditer('(?<!\d)[1-9](?!\d)', text)]
-    return [(index, index + 1, numbers[text[index]]) for index in single_digit_indices]
-
-def get_tab_branchpoints(text: str):
-    tab_indices = [m.start() for m in re.finditer('\t', text)]
-    return [[(tab_index, tab_index + 1, '    ')] for tab_index in tab_indices]
-
-def get_contraction_branchpoints(text: str):
-    contractions = {
-            "won't": 'will not'
-    }
-    branchpoints = []
-    for contraction, long_form in contractions.items():
-       index = text.find(contraction)
-       if index > -1:
-           branchpoints.append([(index, index + len(contraction), long_form)])
     return branchpoints
 
