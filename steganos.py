@@ -215,24 +215,18 @@ def get_all_branchpoints(text: str):
 def get_global_branchpoints(text: str):
     branchpoints = []
 
-    quotes_branchpoint = global_branchpoints.get_single_quotes_branchpoint(text)
-    if quotes_branchpoint: branchpoints.append(quotes_branchpoint)
-
-    digits_branchpoint = global_branchpoints.get_single_digit_branchpoint(text)
-    if digits_branchpoint: branchpoints.append(digits_branchpoint)
+    branchpoints.append(global_branchpoints.get_single_quotes_branchpoint(text))
+    branchpoints.append(global_branchpoints.get_single_digit_branchpoint(text))
 
     # TODO: add more global branchpoints
 
-    return branchpoints
+    return [bp for bp in branchpoints if bp]
 
 def get_local_branchpoints(text: str):
     branchpoints = []
 
-    tab_branchpoints = local_branchpoints.get_tab_branchpoints(text)
-    if tab_branchpoints: branchpoints += tab_branchpoints
-
-    contraction_branchpoints = local_branchpoints.get_contraction_branchpoints(text)
-    if contraction_branchpoints: branchpoints += contraction_branchpoints
+    branchpoints += local_branchpoints.get_tab_branchpoints(text)
+    branchpoints += local_branchpoints.get_contraction_branchpoints(text)
 
     # TODO: add more local branchpoints
 
