@@ -10,6 +10,7 @@ a single bit.  Each branch point is represented by a list of 'changes'.
 import re
 import local_branchpoints
 import global_branchpoints
+import unicode_branchpoints
 
 def bit_capacity(text: str):
     """
@@ -210,7 +211,7 @@ def change_was_made(encoded_text: str, original_text: str, change: tuple):
     return encoded_text[start:end_change] != original_text[start:end_change]
 
 def get_all_branchpoints(text: str):
-    return get_global_branchpoints(text) + get_local_branchpoints(text)
+    return get_global_branchpoints(text) + get_local_branchpoints(text) + get_unicode_branchpoints(text)
 
 def get_global_branchpoints(text: str):
     branchpoints = []
@@ -230,7 +231,20 @@ def get_local_branchpoints(text: str):
 
     # TODO: add more local branchpoints
 
-    # make sure each branchpoint is ordered by earliest change first
+    return sorted_branchpoints(branchpoints)
+
+def get_unicode_branchpoints(text: str):
+    branchpoints = []
+
+    branchpoints += unicode_branchpoints.get_directional_mark_branchpoints(text)
+    # branchpoint += unicode_branchpoints.get_confusibles_branchpoints(text)
+
+    #TODO: add more unicode branchpoints
+
+    return sorted_branchpoints(branchpoints)
+
+def sorted_branchpoints(branchpoints: list):
+    """ sorts the branchpoints by the start of the first change"""
     for bp in branchpoints:
         bp.sort()
 
@@ -240,4 +254,6 @@ def get_local_branchpoints(text: str):
     branchpoints.sort(key=first_change)
 
     return branchpoints
+
+
 
