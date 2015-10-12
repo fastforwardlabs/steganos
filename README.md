@@ -51,7 +51,6 @@ recovered_bits = steganos.decode_partial_text(encoded_text, original_text)
 ```
 
 ## TODO
-- Add additional global and local branchpoints.
-- Include unicode branchpoints for additional capacity.
+- Add additional global, local,, and unicode branchpoints for additional capacity.
 
 
