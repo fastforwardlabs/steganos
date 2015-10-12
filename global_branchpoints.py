@@ -16,6 +16,6 @@ def get_single_digit_branchpoint(text: str):
             '2': 'two',
             '1': 'one'
     }
-    single_digit_indices = [m.start() for m in re.finditer('(?<!\d)[1-9](?!\d)', text)]
+    single_digit_indices = [m.start() for m in re.finditer('(?<![\d\.])[1-9](?![\d\.])', text)]
     return [(index, index + 1, numbers[text[index]]) for index in single_digit_indices]
 

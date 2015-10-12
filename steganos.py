@@ -178,6 +178,9 @@ def undo_change(encoded_text: str, original_text: str, change: tuple):
     start, end, change_string = change
 
     if encoded_text[:start] != original_text[:start]:
+        print(change)
+        print(encoded_text[:start])
+        print(original_text[:start])
         raise ValueError('encoded_text and original_text are ' +
                    'expected to be identical up to the change')
 

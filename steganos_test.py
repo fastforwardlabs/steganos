@@ -87,25 +87,25 @@ def test_execute_branchpoints_when_one_is_sandwiched():
 
 def test_encode():
     # given
-    text = '"I am 9." he said.'
+    text = '"I am 9," he said.'
     bits = '01'
 
     # when
     result = steganos.encode(bits, text)
 
     # then
-    assert result == '"I am nine\u200f\u200e." he said.'
+    assert result == '"I am nine," he said\u200f\u200e.'
 
 def test_encode_a_single_bit():
     # given
-    text = '"I am 9." he said.'
+    text = '"I am 9," he said.'
     bits = '1'
 
     # when
     result = steganos.encode(bits, text)
 
     # then
-    assert result == "'I\u0083 am nine\u200f\u200e.' he said\u200f\u200e."
+    assert result == "'I\u0083 am nine,' he said\u200f\u200e."
 
 def test_encode_raises_when_given_too_many_bits_for_text():
     # given
@@ -268,14 +268,14 @@ def test_get_indices_when_end_is_mid_change_in_original():
 
 def test_get_indices_when_start_is_mid_unchanged_change_in_original():
     # given
-    text = "I won't turn 9."
-    encoded_text = "n't turn nine\u200f\u200e."
+    text = "I won't turn 9"
+    encoded_text = "n't turn nine"
 
     # when
     result = steganos.get_indices_of_encoded_text(encoded_text, text)
 
     # then
-    assert result == (4, 15)
+    assert result == (4, 14)
 
 def test_get_indices_when_end_is_mid_unchanged_change_in_original():
     # given
@@ -323,7 +323,7 @@ def test_global_change_late_in_encoded_text_with_negative_indices():
 
 def test_global_change_late_in_encoded_text():
     # given
-    text = 'I am 9\t, but I say "I am 8."'
+    text = 'I am 9\t, but I say "I am 8"'
     encoded_text = steganos.encode('111', text)
 
     # when
