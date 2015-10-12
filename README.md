@@ -51,6 +51,7 @@ recovered_bits = steganos.decode_partial_text(encoded_text, original_text)
 ```
 
 ## TODO
-- Add additional global, local,, and unicode branchpoints for additional capacity.
+- The code contains sample global, local, and unicode branchpoints. These need to be improved and additional branchpoints need to be added.
+- Prevent unicode changes to sensitive items (e.g. urls).
 
 
