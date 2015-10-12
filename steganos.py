@@ -237,7 +237,7 @@ def get_unicode_branchpoints(text: str):
     branchpoints = []
 
     branchpoints += unicode_branchpoints.get_directional_mark_branchpoints(text)
-    # branchpoint += unicode_branchpoints.get_confusibles_branchpoints(text)
+    branchpoints += unicode_branchpoints.get_non_breaking_branchpoints(text)
 
     #TODO: add more unicode branchpoints
 
@@ -254,6 +254,4 @@ def sorted_branchpoints(branchpoints: list):
     branchpoints.sort(key=first_change)
 
     return branchpoints
-
-
 
