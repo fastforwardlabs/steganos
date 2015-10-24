@@ -1,4 +1,4 @@
-import re 
+import re
 
 def get_tab_branchpoints(text: str):
     tab_indices = [m.start() for m in re.finditer('\t', text)]

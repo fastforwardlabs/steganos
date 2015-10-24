@@ -1,5 +1,6 @@
-import local_branchpoints
 import pytest
+from ..src import local_branchpoints
+
 
 @pytest.mark.parametrize('text, branchpoints', [
     ('\tHello.', [[(0, 1, '    ')]]),
@@ -12,5 +13,3 @@ def test_get_tab_branchpoints(text, branchpoints):
 
     # then
     assert result == branchpoints
-
-

@@ -7,10 +7,9 @@ the change, and the third element is the string that will replace it.
 A 'branchpoint' is a decision about the text that can be used to encode
 a single bit.  Each branch point is represented by a list of 'changes'.
 """
-import re
-import local_branchpoints
-import global_branchpoints
-import unicode_branchpoints
+from . import local_branchpoints
+from . import global_branchpoints
+from . import unicode_branchpoints
 
 def bit_capacity(text: str):
     """

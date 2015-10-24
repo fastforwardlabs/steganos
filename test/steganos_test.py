@@ -1,5 +1,6 @@
-import steganos
 import pytest
+from ..src import steganos
+
 
 @pytest.mark.parametrize('length, expected', [
     (3, 'abc'),
@@ -351,4 +352,3 @@ def test_contraction_branchpoints():
 
     # then
     assert [(2, 7, 'will not')] in result
-
