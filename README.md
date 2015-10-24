@@ -55,4 +55,3 @@ recovered_bits = steganos.decode_partial_text(encoded_text, original_text)
 - Prevent unicode changes to sensitive items (e.g. urls).
 - Handle overlapping changes.
 - Speed up start and end index inference.
-- Improve exception handling, especially during encoding.

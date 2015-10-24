@@ -68,7 +68,7 @@ def decode_full_text(encoded_text: str, original_text: str):
     encoded_range = (0, len(original_text))
     return decode_partial_text(encoded_text, original_text, encoded_range)
 
-def decode_partial_text(encoded_text: str, original_text: str, encoded_range: tuple = None):
+def decode_partial_text(encoded_text: str, original_text: str, encoded_range: tuple=None):
     """
     Decodes bits from encoded text. Use this function if you do not have
     the full partial text.
@@ -83,22 +83,30 @@ def decode_partial_text(encoded_text: str, original_text: str, encoded_range: tu
     :return: The bits decoded from the text. Unretrievable bits are
              returned as question marks.
     """
-    if encoded_range:
-        start, end = translate_to_positive_indices(original_text, encoded_range)
-    else:
-        start, end = get_indices_of_encoded_text(encoded_text, original_text)
+    start, end = get_indices(encoded_range, encoded_text, original_text)
 
     branchpoints = get_all_branchpoints(original_text)
-    original_text = original_text[start:end]
+    partial_original_text = original_text[start:end]
 
     branchpoints = reindex_branchpoints(branchpoints, start)
     changes = get_relevant_changes(branchpoints, start, end)
 
-    return get_bits(encoded_text, original_text, branchpoints, changes)
+    return get_bits(encoded_text, partial_original_text, branchpoints, changes)
+
+def get_indices(encoded_range, encoded_text, original_text):
+    if encoded_range:
+        return translate_to_positive_indices(original_text, encoded_range)
+    return get_indices_of_encoded_text(encoded_text, original_text)
+
 
 def get_bits(encoded_text: str, original_text: str, branchpoints: list, changes: list):
     bits = ['?'] * len(branchpoints)
     for change in changes:
+        if encoded_text[:change[0]] != original_text[:change[0]]:
+            raise ValueError('Encoded text and original text are expected to be identical up to index %d, as '
+                             'changes have been reverted to that point. As they are not identical, the encoded text '
+                             'does not seem to match the original text.' % change[0])
+
         index = branchpoints.index(next(bp for bp in branchpoints if change in bp))
         if bits[index] == '?':
             bits[index] = '1' if change_was_made(encoded_text, original_text, change) else '0'
@@ -139,13 +147,14 @@ def get_indices_of_encoded_text(encoded_text: str, original_text: str):
 
             try:
                 unencoded_text = revert_to_original(encoded_text, partial_text, partial_changes)
-            except:
+            except ValueError:
                 break
 
             if unencoded_text == partial_text:
                 return (start, end)
 
-    raise ValueError('The encoded and original texts do not seem to match')
+    raise ValueError('Cannot infer the start and end indices of the encoded text relative to the original text.'
+                     'The encoded text does not seem to match the original text.')
 
 def revert_to_original(encoded_text: str, original_text: str, changes: list):
     for change in changes:
@@ -154,7 +163,7 @@ def revert_to_original(encoded_text: str, original_text: str, changes: list):
     return encoded_text
 
 def repeat(xs, length: int):
-    return xs * int(length/ len(xs)) + xs[:length % len(xs)]
+    return xs * int(length / len(xs)) + xs[:length % len(xs)]
 
 def filter_by_bits(xs, bits: str):
     return [x for x, flag in zip(xs, bits) if flag == '1']
@@ -175,10 +184,6 @@ def make_changes(text: str, changes: list):
 
 def undo_change(encoded_text: str, original_text: str, change: tuple):
     start, end, change_string = change
-
-    if encoded_text[:start] != original_text[:start]:
-        raise ValueError('encoded_text and original_text are ' +
-                   'expected to be identical up to the change')
 
     beginning = encoded_text[:start]
     original_string = original_text[start:end]
@@ -201,11 +206,6 @@ def undo_change(encoded_text: str, original_text: str, change: tuple):
 
 def change_was_made(encoded_text: str, original_text: str, change: tuple):
     start, _, change_string = change
-
-    if encoded_text[:start] != original_text[:start]:
-        raise ValueError('encoded_text and original_text are ' +
-                   'expected to be identical up to the change')
-
     end_change = start + len(change_string)
     return encoded_text[start:end_change] != original_text[start:end_change]
 
@@ -253,4 +253,3 @@ def sorted_branchpoints(branchpoints: list):
     branchpoints.sort(key=first_change)
 
     return branchpoints
-
