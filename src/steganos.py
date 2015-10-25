@@ -207,8 +207,11 @@ def change_was_made(encoded_text: str, original_text: str, change: tuple):
     return encoded_text[start:end_change] != original_text[start:end_change]
 
 def get_all_branchpoints(text: str):
-    all_branchpoints = get_global_branchpoints(text) + get_local_branchpoints(text) + get_unicode_branchpoints(text)
-    return remove_redundant_prefix_and_suffix_from_change_in_branchpoints(text, all_branchpoints)
+    # local and unicode branchpoints are sorted to maximize the information that can be
+    # retrieved from any contiguous piece of encoded text
+    sorted_branchpoints = sort_branchpoints(get_local_branchpoints(text) + get_unicode_branchpoints(text))
+    branchpoints = get_global_branchpoints(text) + sorted_branchpoints
+    return remove_redundant_prefix_and_suffix_from_change_in_branchpoints(text, branchpoints)
 
 
 def remove_redundant_prefix_and_suffix_from_change_in_branchpoints(original_text: str, branchpoints: list):
@@ -255,10 +258,10 @@ def remove_redundant_characters_from_change(change, original_text):
     return (start, end, change_string)
 
 def get_global_branchpoints(text: str):
-    branchpoints = []
-
-    branchpoints.append(global_branchpoints.get_single_quotes_branchpoint(text))
-    branchpoints.append(global_branchpoints.get_single_digit_branchpoint(text))
+    branchpoints = [
+        global_branchpoints.get_single_quotes_branchpoint(text),
+        global_branchpoints.get_single_digit_branchpoint(text),
+    ]
 
     # TODO: add more global branchpoints
 
@@ -272,7 +275,7 @@ def get_local_branchpoints(text: str):
 
     # TODO: add more local branchpoints
 
-    return sorted_branchpoints(branchpoints)
+    return branchpoints
 
 def get_unicode_branchpoints(text: str):
     branchpoints = []
@@ -282,9 +285,9 @@ def get_unicode_branchpoints(text: str):
 
     #TODO: add more unicode branchpoints
 
-    return sorted_branchpoints(branchpoints)
+    return branchpoints
 
-def sorted_branchpoints(branchpoints: list):
+def sort_branchpoints(branchpoints: list):
     """ sorts the branchpoints by the start of the first change"""
     for bp in branchpoints:
         bp.sort()
