@@ -189,6 +189,7 @@ def undo_change(encoded_text: str, original_text: str, change: tuple):
     original_string = original_text[start:end]
 
     remainder = ''
+    # TODO: find a more robust way to identify partial change strings
     if start == 0 and change_string not in encoded_text:
         # encoded text starts midway through a change
         for i in range(2, len(change_string)):
@@ -210,7 +211,52 @@ def change_was_made(encoded_text: str, original_text: str, change: tuple):
     return encoded_text[start:end_change] != original_text[start:end_change]
 
 def get_all_branchpoints(text: str):
-    return get_global_branchpoints(text) + get_local_branchpoints(text) + get_unicode_branchpoints(text)
+    all_branchpoints = get_global_branchpoints(text) + get_local_branchpoints(text) + get_unicode_branchpoints(text)
+    return remove_redundant_prefix_and_suffix_from_change_in_branchpoints(text, all_branchpoints)
+
+
+def remove_redundant_prefix_and_suffix_from_change_in_branchpoints(original_text: str, branchpoints: list):
+    """
+    This function removes redundant characters for all changes in a list of branchpoints.
+    It shortens changes so that only the necessary characters are included and no characters are
+    repeated between the text in the change and the original text.
+
+    The purpose of this function is to avoid edge-cases that throw off the
+    get_indices_of_encoded_text function.  That function can get confused especially when the change
+    string starts with the same character as the text it is meant to exchange.
+
+    Examples:
+
+    For the text: "I go where he goes"
+    A branchpoint like: [(11, 13, 'she')] would be changed to [(11, 11, 's')]
+
+    For the text: "Therefore they are."
+    A branchpoint like: [(0, 9, 'There')] would be changed to [(5, 9, '')]
+    """
+    return [[remove_redundant_characters_from_change(change, original_text)
+            for change in branchpoint]
+            for branchpoint in branchpoints]
+
+def remove_redundant_characters_from_change(change, original_text):
+    start, end, change_string = change
+
+    while True:
+        text_to_be_changed = original_text[start:end]
+        if text_to_be_changed and change_string and text_to_be_changed[0] == change_string[0]:
+            start += 1
+            change_string = change_string[1:]
+        else:
+            break
+
+    while True:
+        text_to_be_changed = original_text[start:end]
+        if text_to_be_changed and change_string and text_to_be_changed[-1] == change_string[-1]:
+            end -= 1
+            change_string = change_string[:-1]
+        else:
+            break
+
+    return (start, end, change_string)
 
 def get_global_branchpoints(text: str):
     branchpoints = []

@@ -254,7 +254,7 @@ def test_get_indices_when_start_is_mid_change_in_original():
     result = steganos.get_indices_of_encoded_text(encoded_text, text)
 
     # then
-    assert result == (2, 14)
+    assert result == (3, 14)
 
 def test_get_indices_when_end_is_mid_change_in_original():
     # given
@@ -265,7 +265,7 @@ def test_get_indices_when_end_is_mid_change_in_original():
     result = steganos.get_indices_of_encoded_text(encoded_text, text)
 
     # then
-    assert result == (0, 7)
+    assert result == (0, 6)
 
 def test_get_indices_when_start_is_mid_unchanged_change_in_original():
     # given
@@ -352,3 +352,36 @@ def test_contraction_branchpoints():
 
     # then
     assert [(2, 7, 'will not')] in result
+
+def test_remove_single_character_prefix_and_suffix_for_change():
+    # given
+    text = "I'm here."
+    branchpoints = [[(0, 3, 'I am')]]
+
+    # when
+    result = steganos.remove_redundant_prefix_and_suffix_from_change_in_branchpoints(text, branchpoints)
+
+    # then
+    assert result == [[(1, 2, ' a')]]
+
+def test_remove_multiple_character_prefix_for_change():
+    # given
+    text = "Therefore they are."
+    branchpoints = [[(0, 9, 'There')]]
+
+    # when
+    result = steganos.remove_redundant_prefix_and_suffix_from_change_in_branchpoints(text, branchpoints)
+
+    # then
+    assert result == [[(5, 9, '')]]
+
+def test_remove_single_character_suffix_for_change():
+    # given
+    text = "I go where he goes."
+    branchpoints = [[(11, 13, 'she')]]
+
+    # when
+    result = steganos.remove_redundant_prefix_and_suffix_from_change_in_branchpoints(text, branchpoints)
+
+    # then
+    assert result == [[(11, 11, 's')]]
