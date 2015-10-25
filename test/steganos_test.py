@@ -385,3 +385,15 @@ def test_remove_single_character_suffix_for_change():
 
     # then
     assert result == [[(11, 11, 's')]]
+
+def test_undo_change_midway():
+    # given
+    encoded_text = 'not do it.'
+    original_text = "on't do it."
+    change = (0, 3, 'ill no')
+
+    # when
+    result = steganos.undo_change(encoded_text, original_text, change)
+
+    # then
+    assert result == "on't do it."

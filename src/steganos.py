@@ -153,7 +153,7 @@ def get_indices_of_encoded_text(encoded_text: str, original_text: str):
             if unencoded_text == partial_text:
                 return (start, end)
 
-    raise ValueError('Cannot infer the start and end indices of the encoded text relative to the original text.'
+    raise ValueError('Cannot infer the start and end indices of the encoded text relative to the original text. '
                      'The encoded text does not seem to match the original text.')
 
 def revert_to_original(encoded_text: str, original_text: str, changes: list):
@@ -189,16 +189,12 @@ def undo_change(encoded_text: str, original_text: str, change: tuple):
     original_string = original_text[start:end]
 
     remainder = ''
-    # TODO: find a more robust way to identify partial change strings
+
+    # encoded text starts midway through a change
     if start == 0 and change_string not in encoded_text:
-        # encoded text starts midway through a change
-        for i in range(2, len(change_string)):
-            # start at 2 because if the first difference is at index 0
-            # then change was not made
-            if encoded_text[:i] not in change_string:
-                remainder_start = i - 1
-                remainder = encoded_text[remainder_start:]
-                break
+        for index in range(1, len(change_string)):
+            if change_string[-1 * index:] == encoded_text[:index]:
+                remainder = encoded_text[index:]
 
     if not remainder:
         remainder = encoded_text[start + len(change_string):]
