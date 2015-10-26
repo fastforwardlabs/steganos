@@ -240,20 +240,18 @@ def remove_redundant_prefix_and_suffix_from_change_in_branchpoints(original_text
 def remove_redundant_characters_from_change(change, original_text):
     start, end, change_string = change
 
-    while True:
+    for index in range(len(change_string), 0, -1):
         text_to_be_changed = original_text[start:end]
-        if text_to_be_changed and change_string and text_to_be_changed[0] == change_string[0]:
-            start += 1
-            change_string = change_string[1:]
-        else:
+        if text_to_be_changed and change_string and text_to_be_changed[:index] == change_string[:index]:
+            start += index
+            change_string = change_string[index:]
             break
 
-    while True:
+    for index in range(len(change_string), 0, -1):
         text_to_be_changed = original_text[start:end]
-        if text_to_be_changed and change_string and text_to_be_changed[-1] == change_string[-1]:
-            end -= 1
-            change_string = change_string[:-1]
-        else:
+        if text_to_be_changed and change_string and text_to_be_changed[-1 * index:] == change_string[-1 * index:]:
+            end -= index
+            change_string = change_string[:-1 * index]
             break
 
     return (start, end, change_string)
