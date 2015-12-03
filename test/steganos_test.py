@@ -1,7 +1,6 @@
 import pytest
 from ..src import steganos
 
-
 @pytest.mark.parametrize('length, expected', [
     (3, 'abc'),
     (5, 'abcab'),
@@ -342,16 +341,6 @@ def test_bit_capacity():
 
     # then
     assert result >= 3
-
-def test_contraction_branchpoints():
-    # given
-    text = "I won't do it."
-
-    # when
-    result = steganos.get_local_branchpoints(text)
-
-    # then
-    assert [(2, 7, 'will not')] in result
 
 def test_remove_single_character_prefix_and_suffix_for_change():
     # given

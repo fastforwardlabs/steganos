@@ -210,8 +210,8 @@ def change_was_made(encoded_text: str, original_text: str, change: tuple):
 def get_all_branchpoints(text: str):
     # local and unicode branchpoints are sorted to maximize the information that can be
     # retrieved from any contiguous piece of encoded text
-    sorted_branchpoints = sort_branchpoints(get_local_branchpoints(text) + get_unicode_branchpoints(text))
-    branchpoints = get_global_branchpoints(text) + sorted_branchpoints
+    sorted_branchpoints = sort_branchpoints(local_branchpoints.get_all(text) + unicode_branchpoints.get_all(text))
+    branchpoints = global_branchpoints.get_all(text) + sorted_branchpoints
     return remove_redundant_prefix_and_suffix_from_change_in_branchpoints(text, branchpoints)
 
 
@@ -255,36 +255,6 @@ def remove_redundant_characters_from_change(change, original_text):
             break
 
     return (start, end, change_string)
-
-def get_global_branchpoints(text: str):
-    branchpoints = [
-        global_branchpoints.get_single_quotes_branchpoint(text),
-        global_branchpoints.get_single_digit_branchpoint(text),
-    ]
-
-    # TODO: add more global branchpoints
-
-    return [bp for bp in branchpoints if bp]
-
-def get_local_branchpoints(text: str):
-    branchpoints = []
-
-    branchpoints += local_branchpoints.get_tab_branchpoints(text)
-    branchpoints += local_branchpoints.get_contraction_branchpoints(text)
-
-    # TODO: add more local branchpoints
-
-    return branchpoints
-
-def get_unicode_branchpoints(text: str):
-    branchpoints = []
-
-    branchpoints += unicode_branchpoints.get_directional_mark_branchpoints(text)
-    branchpoints += unicode_branchpoints.get_non_breaking_branchpoints(text)
-
-    #TODO: add more unicode branchpoints
-
-    return branchpoints
 
 def sort_branchpoints(branchpoints: list):
     """ sorts the branchpoints by the start of the first change"""

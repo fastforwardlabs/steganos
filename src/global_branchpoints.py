@@ -1,5 +1,13 @@
 import re
 
+def get_all(text: str):
+    branchpoints = [
+        get_single_quotes_branchpoint(text),
+        get_single_digit_branchpoint(text)
+    ]
+
+    return [bp for bp in branchpoints if bp]
+
 def get_single_quotes_branchpoint(text: str):
     double_quote_indices = [m.start() for m in re.finditer('"', text)]
     return [(index, index + 1, "'") for index in double_quote_indices]

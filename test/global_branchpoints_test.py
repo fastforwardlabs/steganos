@@ -1,7 +1,6 @@
 import pytest
 from ..src import global_branchpoints
 
-
 @pytest.mark.parametrize('text, branchpoint', [
     ('"A" and "B"', [(0, 1, "'"), (2, 3, "'"), (8, 9, "'"), (10, 11, "'")]),
     ('There are no quotes in this text.', [])
@@ -25,3 +24,4 @@ def test_get_global_single_digit_branchpoint(text, branchpoint):
 
     # then
     assert result == branchpoint
+
