@@ -7,10 +7,10 @@ def get_all_branchpoints(text: str):
     # retrieved from any contiguous piece of encoded text
     sorted_branchpoints = sort_branchpoints(local_branchpoints.get_all(text) + unicode_branchpoints.get_all(text))
     branchpoints = global_branchpoints.get_all(text) + sorted_branchpoints
-    return remove_redundant_prefix_and_suffix_from_change_in_branchpoints(text, branchpoints)
+    return remove_redundant_characters(text, branchpoints)
 
 
-def remove_redundant_prefix_and_suffix_from_change_in_branchpoints(original_text: str, branchpoints: list):
+def remove_redundant_characters(original_text: str, branchpoints: list):
     """
     This function removes redundant characters for all changes in a list of branchpoints.
     It shortens changes so that only the necessary characters are included and no characters are
