@@ -17,16 +17,6 @@ def test_repeated_string(length, expected):
 def test_repeated_list(length, expected):
     assert expected == steganos.repeat(['a', 'b', 'c'], length)
 
-def test_get_all_branchpoints_finds_matching_quotes():
-    # given
-    text = '"Hello," he said.'
-
-    # when
-    result = steganos.get_all_branchpoints(text)
-
-    # then
-    assert [(0, 1, "'"), (7, 8, "'")] in result
-
 def test_filter_by_bits():
     # given
     bits = '101'
@@ -85,73 +75,6 @@ def test_execute_branchpoints_when_one_is_sandwiched():
     # then
     assert result == "'How is he?' he asked."
 
-def test_encode():
-    # given
-    text = '"I am 9," he said.'
-    bits = '01'
-
-    # when
-    result = steganos.encode(bits, text)
-
-    # then
-    assert result == '"I am nine," he said\u200f\u200e.'
-
-def test_encode_a_single_bit():
-    # given
-    text = '"I am 9," he said.'
-    bits = '1'
-
-    # when
-    result = steganos.encode(bits, text)
-
-    # then
-    assert result == "'I\u0083 am nine,' he said\u200f\u200e."
-
-def test_encode_raises_when_given_too_many_bits_for_text():
-    # given
-    text = '9 and some more text'
-    bits = '110'
-
-    # then
-    with pytest.raises(ValueError) as execinfo:
-        steganos.encode(bits, text)
-
-    assert (str(steganos.bit_capacity(text)) in str(execinfo.value)
-            and str(len(bits)) in str(execinfo.value))
-
-def test_decode():
-    # given
-    text = '"I am 9." he said.'
-    bits = '01'
-    encoded_text = steganos.encode(bits, text)
-
-    # when
-    result = steganos.decode_full_text(encoded_text, text)
-
-    # then
-    assert bits in result
-
-def test_decode_a_single_bit():
-    # given
-    text = '"I am 9." he said.'
-    bits = '1'
-    encoded_text = steganos.encode(bits, text)
-
-    # when
-    result = steganos.decode_full_text(encoded_text, text)
-
-    # then
-    assert '1111' in result
-
-def test_decode_with_bad_origin():
-    # given
-    original_text = 'This is a sentence with a 9.'
-    encoded_text = 'This does not match with a 9.'
-
-    # then
-    with pytest.raises(ValueError):
-        steganos.decode_full_text(encoded_text, original_text)
-
 def test_change_was_made():
     # given
     text1 = 'The dogs can bark.'
@@ -187,6 +110,51 @@ def test_undo_change():
 
     # then
     assert result == original_text
+
+def test_remove_single_character_prefix_and_suffix_for_change():
+    # given
+    text = "I'm here."
+    branchpoints = [[(0, 3, 'I am')]]
+
+    # when
+    result = steganos.remove_redundant_prefix_and_suffix_from_change_in_branchpoints(text, branchpoints)
+
+    # then
+    assert result == [[(1, 2, ' a')]]
+
+def test_remove_multiple_character_prefix_for_change():
+    # given
+    text = "Therefore they are."
+    branchpoints = [[(0, 9, 'There')]]
+
+    # when
+    result = steganos.remove_redundant_prefix_and_suffix_from_change_in_branchpoints(text, branchpoints)
+
+    # then
+    assert result == [[(5, 9, '')]]
+
+def test_remove_single_character_suffix_for_change():
+    # given
+    text = "I go where he goes."
+    branchpoints = [[(11, 13, 'she')]]
+
+    # when
+    result = steganos.remove_redundant_prefix_and_suffix_from_change_in_branchpoints(text, branchpoints)
+
+    # then
+    assert result == [[(11, 11, 's')]]
+
+def test_undo_change_midway():
+    # given
+    encoded_text = 'not do it.'
+    original_text = "on't do it."
+    change = (0, 3, 'ill no')
+
+    # when
+    result = steganos.undo_change(encoded_text, original_text, change)
+
+    # then
+    assert result == "on't do it."
 
 def test_encoding_when_digits_appear_before_quotes():
     # given
@@ -342,47 +310,80 @@ def test_bit_capacity():
     # then
     assert result >= 3
 
-def test_remove_single_character_prefix_and_suffix_for_change():
+def test_get_all_branchpoints_finds_matching_quotes():
     # given
-    text = "I'm here."
-    branchpoints = [[(0, 3, 'I am')]]
+    text = '"Hello," he said.'
 
     # when
-    result = steganos.remove_redundant_prefix_and_suffix_from_change_in_branchpoints(text, branchpoints)
+    result = steganos.get_all_branchpoints(text)
 
     # then
-    assert result == [[(1, 2, ' a')]]
+    assert [(0, 1, "'"), (7, 8, "'")] in result
 
-def test_remove_multiple_character_prefix_for_change():
+def test_encode():
     # given
-    text = "Therefore they are."
-    branchpoints = [[(0, 9, 'There')]]
+    text = '"I am 9," he said.'
+    bits = '01'
 
     # when
-    result = steganos.remove_redundant_prefix_and_suffix_from_change_in_branchpoints(text, branchpoints)
+    result = steganos.encode(bits, text)
 
     # then
-    assert result == [[(5, 9, '')]]
+    assert result == '"I am nine," he said\u200f\u200e.'
 
-def test_remove_single_character_suffix_for_change():
+def test_encode_a_single_bit():
     # given
-    text = "I go where he goes."
-    branchpoints = [[(11, 13, 'she')]]
+    text = '"I am 9," he said.'
+    bits = '1'
 
     # when
-    result = steganos.remove_redundant_prefix_and_suffix_from_change_in_branchpoints(text, branchpoints)
+    result = steganos.encode(bits, text)
 
     # then
-    assert result == [[(11, 11, 's')]]
+    assert result == "'I\u0083 am nine,' he said\u200f\u200e."
 
-def test_undo_change_midway():
+def test_encode_raises_when_given_too_many_bits_for_text():
     # given
-    encoded_text = 'not do it.'
-    original_text = "on't do it."
-    change = (0, 3, 'ill no')
+    text = '9 and some more text'
+    bits = '110'
+
+    # then
+    with pytest.raises(ValueError) as execinfo:
+        steganos.encode(bits, text)
+
+    assert (str(steganos.bit_capacity(text)) in str(execinfo.value)
+            and str(len(bits)) in str(execinfo.value))
+
+def test_decode():
+    # given
+    text = '"I am 9." he said.'
+    bits = '01'
+    encoded_text = steganos.encode(bits, text)
 
     # when
-    result = steganos.undo_change(encoded_text, original_text, change)
+    result = steganos.decode_full_text(encoded_text, text)
 
     # then
-    assert result == "on't do it."
+    assert bits in result
+
+def test_decode_a_single_bit():
+    # given
+    text = '"I am 9." he said.'
+    bits = '1'
+    encoded_text = steganos.encode(bits, text)
+
+    # when
+    result = steganos.decode_full_text(encoded_text, text)
+
+    # then
+    assert '1111' in result
+
+def test_decode_with_bad_origin():
+    # given
+    original_text = 'This is a sentence with a 9.'
+    encoded_text = 'This does not match with a 9.'
+
+    # then
+    with pytest.raises(ValueError):
+        steganos.decode_full_text(encoded_text, original_text)
+
