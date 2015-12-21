@@ -1,5 +1,6 @@
 import pytest
 from ..src import steganos
+from ..src import steganos_encode
 
 @pytest.mark.parametrize('length, expected', [
     (3, 'abc'),
@@ -7,7 +8,7 @@ from ..src import steganos
     (2, 'ab')
 ])
 def test_repeated_string(length, expected):
-    assert expected == steganos.repeat('abc', length)
+    assert expected == steganos_encode.repeat('abc', length)
 
 @pytest.mark.parametrize('length, expected', [
     (3, ['a', 'b', 'c']),
@@ -15,7 +16,7 @@ def test_repeated_string(length, expected):
     (2, ['a', 'b'])
 ])
 def test_repeated_list(length, expected):
-    assert expected == steganos.repeat(['a', 'b', 'c'], length)
+    assert expected == steganos_encode.repeat(['a', 'b', 'c'], length)
 
 def test_filter_by_bits():
     # given
@@ -23,7 +24,7 @@ def test_filter_by_bits():
     xs = ['a', 'b', 'c']
 
     # when
-    result = steganos.filter_by_bits(xs, bits)
+    result = steganos_encode.filter_by_bits(xs, bits)
 
     # then
     assert result == ['a', 'c']
@@ -34,7 +35,7 @@ def test_make_change_for_single_change():
     changes = [(9, 11, 'er')]
 
     # when
-    result = steganos.make_changes(text, changes)
+    result = steganos_encode.make_changes(text, changes)
 
     # then
     assert result == 'This is her dog.'
@@ -45,7 +46,7 @@ def test_make_changes_for_two_changes():
     changes = [(9, 11, 'er'), (12, 15, 'cat')]
 
     # when
-    result = steganos.make_changes(text, changes)
+    result = steganos_encode.make_changes(text, changes)
 
     # then
     assert result == 'This is her cat.'
@@ -56,7 +57,7 @@ def test_make_changes_when_change_is_different_length():
     changes = [(22, 28, 'text'), (0, 4, 'It')]
 
     # when
-    result = steganos.make_changes(text, changes)
+    result = steganos_encode.make_changes(text, changes)
 
     # then
     assert result == 'It is just a sample text.'
@@ -70,7 +71,7 @@ def test_execute_branchpoints_when_one_is_sandwiched():
     ]
 
     # when
-    result = steganos.execute_branchpoints(branchpoints, text)
+    result = steganos_encode.execute_branchpoints(branchpoints, text)
 
     # then
     assert result == "'How is he?' he asked."
