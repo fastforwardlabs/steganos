@@ -1,6 +1,5 @@
 import pytest
 from ..src import steganos_decode
-from ..src import steganos_encode
 
 def test_change_was_made():
     # given
