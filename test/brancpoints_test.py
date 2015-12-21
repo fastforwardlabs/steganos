@@ -22,7 +22,6 @@ def test_remove_multiple_character_prefix_for_change():
     # then
     assert result == [[(5, 9, '')]]
 
-
 def test_remove_single_character_suffix_for_change():
     # given
     text = "I go where he goes."
