@@ -1,5 +1,5 @@
 import pytest
-from ..src import steganos
+from ..src import steganos_decode
 from ..src import steganos_encode
 
 @pytest.mark.parametrize('length, expected', [
@@ -83,7 +83,7 @@ def test_change_was_made():
     change = (4, 7, 'dogs')
 
     # when
-    result = steganos.change_was_made(text1, text2, change)
+    result = steganos_decode.change_was_made(text1, text2, change)
 
     # then
     assert result
@@ -95,7 +95,7 @@ def test_change_was_not_made():
     change = (4, 8, 'different')
 
     # when
-    result = steganos.change_was_made(text1, text2, change)
+    result = steganos_decode.change_was_made(text1, text2, change)
 
     # then
     assert not result
@@ -107,7 +107,7 @@ def test_undo_change():
     change = (5, 6, 'nine')
 
     # when
-    result = steganos.undo_change(encoded_text, original_text, change)
+    result = steganos_decode.undo_change(encoded_text, original_text, change)
 
     # then
     assert result == original_text
@@ -119,7 +119,7 @@ def test_undo_change_midway():
     change = (0, 3, 'ill no')
 
     # when
-    result = steganos.undo_change(encoded_text, original_text, change)
+    result = steganos_decode.undo_change(encoded_text, original_text, change)
 
     # then
     assert result == "on't do it."
