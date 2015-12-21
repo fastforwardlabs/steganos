@@ -28,11 +28,11 @@ def remove_redundant_characters(original_text: str, branchpoints: list):
     For the text: "Therefore they are."
     A branchpoint like: [(0, 9, 'There')] would be changed to [(5, 9, '')]
     """
-    return [[remove_redundant_characters_from_change(change, original_text)
+    return [[remove_redundant_characters_from_change(original_text, change)
             for change in branchpoint]
             for branchpoint in branchpoints]
 
-def remove_redundant_characters_from_change(change, original_text):
+def remove_redundant_characters_from_change(original_text: str, change: tuple):
     start, end, change_string = change
 
     for index in range(len(change_string), 0, -1):
