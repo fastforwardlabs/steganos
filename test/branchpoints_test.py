@@ -1,4 +1,5 @@
 from ..src.branchpoints import remove_redundant_characters
+from ..src.branchpoints import get_all_branchpoints
 
 def test_remove_single_character_prefix_and_suffix_for_change():
     # given
@@ -33,4 +34,13 @@ def test_remove_single_character_suffix_for_change():
     # then
     assert result == [[(11, 11, 's')]]
 
+def test_get_all_branchpoints_finds_matching_quotes():
+    # given
+    text = '"Hello," he said.'
+
+    # when
+    result = get_all_branchpoints(text)
+
+    # then
+    assert [(0, 1, "'"), (7, 8, "'")] in result
 

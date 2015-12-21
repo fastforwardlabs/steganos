@@ -237,13 +237,3 @@ def test_bit_capacity():
     # then
     assert result >= 3
 
-def test_get_all_branchpoints_finds_matching_quotes():
-    # given
-    text = '"Hello," he said.'
-
-    # when
-    result = steganos_decode.get_all_branchpoints(text)
-
-    # then
-    assert [(0, 1, "'"), (7, 8, "'")] in result
-
