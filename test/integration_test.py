@@ -1,4 +1,5 @@
 import pytest
+import os
 from ..src import steganos_decode
 from ..src import steganos_encode
 
@@ -61,10 +62,23 @@ def test_single_bit():
 
 def test_bad_origin():
     # given
-    original_text = 'This is a sentence with a 9.'
+    original_text = 'This is a bad sentence with a 9.'
     encoded_text = 'This does not match with a 9.'
 
     # then
     with pytest.raises(ValueError):
         steganos_decode.decode_full_text(encoded_text, original_text)
+
+def test_with_sample_fflabs_report():
+    # given
+    bits = '101010101011111111'
+    with open(os.path.dirname(os.path.abspath(__file__)) + '/sample_text.txt') as report:
+        text = report.read()
+    encoded_text = steganos_encode.encode(bits, text)
+
+    # when
+    result = steganos_decode.decode_full_text(encoded_text, text)
+
+    # then
+    assert bits in result
 

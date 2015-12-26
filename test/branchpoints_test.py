@@ -1,4 +1,6 @@
 import pytest
+from ..src.steganos_encode import execute_branchpoints
+from ..src.steganos_decode import undo_change
 from ..src.branchpoints import *
 
 def test_remove_single_character_prefix_and_suffix_for_change():
@@ -95,7 +97,7 @@ def test_get_global_single_digit_branchpoint(text, branchpoint):
     ('Period.', [[(6, 6, '\u200f\u200e')]]),
     ('No periods!', [])
 ])
-def test_diretional_mark_branchpoints(text, branchpoints):
+def test_directional_mark_branchpoints(text, branchpoints):
     # when
     result = get_directional_mark_branchpoints(text)
 
