@@ -129,8 +129,15 @@ def change_was_made(encoded_text: str, original_text: str, change: tuple):
     start, _, change_string = change
     end_change = start + len(change_string)
 
+    # encoded text starts in the middle of the change
+    if start == 0:
+        for i in range(len(change_string)):
+            if encoded_text[:i] == change_string[-1 * i:]:
+                return True
+
+    # change end_of_change if encoded text ends in the middle of the change
     if end_change > min(len(encoded_text), len(original_text)):
         end_change = min(len(encoded_text), len(original_text))
 
-    return encoded_text[start:end_change] != original_text[start:end_change]
+    return encoded_text[start:end_change] == change_string[:end_change - start]
 

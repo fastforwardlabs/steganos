@@ -3,24 +3,47 @@ from ..src import steganos_decode
 
 def test_change_was_made():
     # given
-    text1 = 'The dogs can bark.'
-    text2 = 'The dog can bark.'
+    original_text = 'The dog can bark.'
+    encoded_text = 'The dogs can bark.'
     change = (4, 7, 'dogs')
 
     # when
-    result = steganos_decode.change_was_made(text1, text2, change)
+    result = steganos_decode.change_was_made(encoded_text, original_text, change)
+
+    # then
+    assert result
+
+def test_change_detected_encoded_when_text_ends_mid_change():
+    # given
+    original_text = 'abcdef'
+    encoded_text = 'ABCD'
+    change = (0, 5, 'ABCDE')
+
+    # when
+    result = steganos_decode.change_was_made(encoded_text, original_text, change)
+
+    # then
+    assert result
+
+def test_change_detected_when_encoded_text_starts_mid_change():
+    # given
+    original_text = 'abcdef'
+    encoded_text = 'CDEf'
+    change = (0, 5, 'ABCDE')
+
+    # when
+    result = steganos_decode.change_was_made(encoded_text, original_text, change)
 
     # then
     assert result
 
 def test_change_was_not_made():
     # given
-    text1 = 'The same string.'
-    text2 = 'The same string.'
+    text = 'The same string.'
     change = (4, 8, 'different')
 
     # when
-    result = steganos_decode.change_was_made(text1, text2, change)
+    result = steganos_decode.change_was_made(text, text, change)
 
     # then
     assert not result
