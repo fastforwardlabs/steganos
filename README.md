@@ -62,15 +62,15 @@ Each **branchpoint** is represented as a list of **changes**.  Each **change** i
 
 ## Adding Branchpoints
 
-Adding a new type of branchpoint should only entail changes to src/branchpoints.py and test/branchpoints_test.py.  Simply add a function that accepts a string and returns a list of branchpoints represented in the manner described above.  
+Adding a new type of branchpoint should only entail changes to src/branchpoints.py and test/branchpoints_test.py.  Simply add a function that accepts a string and returns a list of branchpoints represented in the manner described above.
 
 Note that there are functions called `unicode_branchpoints`, `ascii_branchpoints` and `global_branchpoints`in the branchpoints module.  Functions that add branchpoints that take advantage of unicode codepoints should be called from the `unicode_branchpoints` function.  Other local branchpoints should be called from the `ascii_branchpoints` function.
 
-Some changes to the text only make sense when applied universally (e.g. using oxford commas).  These can be represented as a single branchopint with many changes.  Functions that find global branchpoints should be called from the `global_branchpoints` function.  
+Some changes to the text only make sense when applied universally (e.g. using oxford commas).  These can be represented as a single branchopint with many changes.  Functions that find global branchpoints should be called from the `global_branchpoints` function.
 
 The `get_all_branchpoints` function in that module will then integrate the new branchpoints appropriately, and no further changes will have to be made.
 
-Please note that adding new branchpoints will make it impossible to decode text that had been encoded before those branchpoints were added.  As such, we should bump the version every time new branchpoints are added and keep track of which texts were encoded with which version.  
+Please note that adding new branchpoints will make it impossible to decode text that had been encoded before those branchpoints were added.  As such, we should bump the version every time new branchpoints are added and keep track of which texts were encoded with which version.
 
 An arbitrary example to demonstrate a function that finds branchpoints with multiple changes each is below.  This will generate branchoints that every time the letter 'a' appears will change it to 'x' and will change the letter two before to 'y'.  This is of course not a legitimate branchpoint because it alters the semantics of the text.
 
@@ -84,6 +84,6 @@ def example_branchpoints(text: str):
 # TODO
 - The code contains sample global, local, and unicode branchpoints. These need to be improved and additional branchpoints need to be added.
 - Prevent unicode changes to sensitive items (e.g. urls).
-- Handle overlapping changes (current cause of full report text integration test failure).
+- Handle overlapping changes
 - Speed up start and end index inference.
 - Automatically convert changes to the smallest possible range of indices, even when this means splittling up a single change into two or more changes.
