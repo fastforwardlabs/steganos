@@ -53,6 +53,6 @@ recovered_bits = steganos.decode_partial_text(encoded_text, original_text)
 ## TODO
 - The code contains sample global, local, and unicode branchpoints. These need to be improved and additional branchpoints need to be added.
 - Prevent unicode changes to sensitive items (e.g. urls).
-- Handle overlapping changes.
+- Handle overlapping changes (current cause of full report text integration test failure).
 - Speed up start and end index inference.
 - Automatically convert changes to the smallest possible range of indices, even when this means splittling up a single change into two or more changes.
