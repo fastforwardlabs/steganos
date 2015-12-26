@@ -37,9 +37,8 @@ def decode_partial_text(encoded_text: str, original_text: str, encoded_range: tu
     :return: The bits decoded from the text. Unretrievable bits are
              returned as question marks.
     """
-    start, end = encoded_range or get_indices_of_encoded_text(encoded_text, original_text)
-
     branchpoints = get_all_branchpoints(original_text)
+    start, end = encoded_range or get_indices(encoded_text, original_text, branchpoints)
     partial_original_text = original_text[start:end]
 
     branchpoints = reindex_branchpoints(branchpoints, start)
@@ -79,8 +78,7 @@ def reindex_changes(changes: list, start: int):
 def get_changes_up_to_index(changes: list, index: int):
     return [change for change in changes if change[0] >= 0 and change[1] <= index]
 
-def get_indices_of_encoded_text(encoded_text: str, original_text: str):
-    branchpoints = get_all_branchpoints(original_text)
+def get_indices(encoded_text: str, original_text: str, branchpoints: list):
     changes = sum(branchpoints, [])
     changes.sort()
 
@@ -130,5 +128,9 @@ def undo_change(encoded_text: str, original_text: str, change: tuple):
 def change_was_made(encoded_text: str, original_text: str, change: tuple):
     start, _, change_string = change
     end_change = start + len(change_string)
+
+    if end_change > min(len(encoded_text), len(original_text)):
+        end_change = min(len(encoded_text), len(original_text))
+
     return encoded_text[start:end_change] != original_text[start:end_change]
 

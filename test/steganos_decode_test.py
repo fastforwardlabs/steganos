@@ -49,91 +49,63 @@ def test_undo_change_midway():
     # then
     assert result == "on't do it."
 
-def test_get_indices_of_encoded_text_when_text_is_at_start():
+def test_get_indices_when_text_is_at_start():
     # given
-    text = 'Chapter 9 - "Hello!", Chapter 10 - "Goodbye!"'
-    encoded_text = "Chapter nine - 'Hello!'"
+    text = 'abcdef'
+    encoded_text = 'azc'
+    branchpoints = [[(1, 2, 'z')]]
 
     # when
-    result  = steganos_decode.get_indices_of_encoded_text(encoded_text, text)
+    result  = steganos_decode.get_indices(encoded_text, text, branchpoints)
 
     # then
-    assert result == (0, 20)
+    assert result == (0, 3)
 
 def test_get_indices_when_encoded_text_not_at_start():
     # given
-    text = 'Chapter 9 - "Hello!", Chapter 8 - "Goodbye!"'
-    encoded_text = 'nine - "Hello!", Chapter eight'
+    text = 'abcdef'
+    encoded_text = 'dzf'
+    branchpoints = [[(4, 5, 'z')]]
 
     # when
-    result = steganos_decode.get_indices_of_encoded_text(encoded_text, text)
+    result = steganos_decode.get_indices(encoded_text, text, branchpoints)
 
     # then
-    assert result == (8, 31)
+    assert result == (3, 6)
 
-def test_get_indices_when_change_is_not_start_of_encoded_text():
+def test_get_indices_when_end_is_mid_changeed():
     # given
-    text = 'Chapter 9 - "Hello!", Chapter 10 - "Goodbye!"'
-    encoded_text = " - 'Hello!', Chapter "
+    text = 'abcdef'
+    encoded_text = 'abcXY'
+    branchpoints = [[(3, 5, 'XYZ')]]
 
     # when
-    result = steganos_decode.get_indices_of_encoded_text(encoded_text, text)
+    result = steganos_decode.get_indices(encoded_text, text, branchpoints)
 
     # then
-    assert result == (9, 30)
+    assert result == (0, 5)
 
-def test_get_indices_when_end_is_mid_change_in_encoded():
+def test_get_indices_when_start_is_mid_change():
     # given
-    text = 'Chapter 9 - "Hello!", Chapter 8 - "Goodbye!"'
-    encoded_text = " - 'Hello!', Chapter eig"
+    text = 'abcdef'
+    encoded_text = 'YZdef'
+    branchpoints = [[(1, 3, 'XYZ')]]
 
     # when
-    result = steganos_decode.get_indices_of_encoded_text(encoded_text, text)
+    result = steganos_decode.get_indices(encoded_text, text, branchpoints)
 
     # then
-    assert result == (9, 31)
+    assert result == (1, 6)
 
-def test_get_indices_when_start_is_mid_change_in_original():
+def test_get_indices_when_branchpoints_not_executed():
     # given
-    text = "I won't do it."
-    encoded_text = "not do it\u200f\u200e."
+    text = 'abcdef'
+    encoded_text = 'bcde'
+    branchpoints = [[(2, 3, 'XYZ')]]
 
     # when
-    result = steganos_decode.get_indices_of_encoded_text(encoded_text, text)
+    result = steganos_decode.get_indices(encoded_text, text, branchpoints)
 
     # then
-    assert result == (3, 14)
-
-def test_get_indices_when_end_is_mid_change_in_original():
-    # given
-    text = "I won't."
-    encoded_text = "I will"
-
-    # when
-    result = steganos_decode.get_indices_of_encoded_text(encoded_text, text)
-
-    # then
-    assert result == (0, 6)
-
-def test_get_indices_when_start_is_mid_unchanged_change_in_original():
-    # given
-    text = "I won't turn 9"
-    encoded_text = "n't turn nine"
-
-    # when
-    result = steganos_decode.get_indices_of_encoded_text(encoded_text, text)
-
-    # then
-    assert result == (4, 14)
-
-def test_get_indices_when_end_is_mid_unchanged_change_in_original():
-    # given
-    text = "I won't turn 9."
-    encoded_text = "I wo"
-
-    # when
-    result = steganos_decode.get_indices_of_encoded_text(encoded_text, text)
-
-    # then
-    assert result == (0, 4)
+    assert result == (1, 5)
 
