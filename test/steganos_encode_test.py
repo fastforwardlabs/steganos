@@ -1,5 +1,4 @@
 import pytest
-import unittest.mock
 from ..src import steganos_encode
 
 @pytest.mark.parametrize('length, expected', [
