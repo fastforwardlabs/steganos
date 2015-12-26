@@ -50,7 +50,38 @@ partial_text = encoded_text[2:8]
 recovered_bits = steganos.decode_partial_text(encoded_text, original_text)
 ```
 
-## TODO
+# Extending Steganos
+
+Steganos **encoding** works by generating 'branchpoints' for a given original text.  Each branchpoint represents a change to the text that does not change the meaning of the text.  Each branchpoint is 'executed', which means that the change it defines is made, according to the bits we are trying to encode.  For example, if we want to encode '10' in a text for which we can generate two branchpoints, the first of those is executed and the second is not.  Note that if there are more branchpoints available than there are bits to encode, the bits are repeated to make use of the spare capacity.  For example, if we want to encode '10' in a text with 4 branchpoints, `steganos.encode` automatically encodes '1010', improving our ability to retrieve the encoded information from an incomplete encoded text.
+
+Steganos **decoding** works by figuring out which branchpoints were executed on a given text.  It does this by comparing the encoded text to the original.
+
+## The Data Model
+
+Each **branchpoint** is represented as a list of **changes**.  Each **change** is a tuple of length three.  The first two elements are the start and end indices of the chunk to be removed from the text, and the third element is the text with which it is to be replaced.  The end index is non-inclusive.  Branchpoints are represented in this way so that they can be easily interleaved.
+
+## Adding Branchpoints
+
+Adding a new type of branchpoint should only entail changes to src/branchpoints.py and test/branchpoints_test.py.  Simply add a function that accepts a string and returns a list of branchpoints represented in the manner described above.  
+
+Note that there are functions called `unicode_branchpoints`, `ascii_branchpoints` and `global_branchpoints`in the branchpoints module.  Functions that add branchpoints that take advantage of unicode codepoints should be called from the `unicode_branchpoints` function.  Other local branchpoints should be called from the `ascii_branchpoints` function.
+
+Some changes to the text only make sense when applied universally (e.g. using oxford commas).  These can be represented as a single branchopint with many changes.  Functions that find global branchpoints should be called from the `global_branchpoints` function.  
+
+The `get_all_branchpoints` function in that module will then integrate the new branchpoints appropriately, and no further changes will have to be made.
+
+Please note that adding new branchpoints will make it impossible to decode text that had been encoded before those branchpoints were added.  As such, we should bump the version every time new branchpoints are added and keep track of which texts were encoded with which version.  
+
+An arbitrary example to demonstrate a function that finds branchpoints with multiple changes each is below.  This will generate branchoints that every time the letter 'a' appears will change it to 'x' and will change the letter two before to 'y'.  This is of course not a legitimate branchpoint because it alters the semantics of the text.
+
+```.py
+def example_branchpoints(text: str):
+    a_indices = [index for index, char in enumerate(text) if char == 'a']
+    return [[(index - 2, index - 1, 'y'), (index, index + 1, 'x')] for index in a_indices]
+```
+
+
+# TODO
 - The code contains sample global, local, and unicode branchpoints. These need to be improved and additional branchpoints need to be added.
 - Prevent unicode changes to sensitive items (e.g. urls).
 - Handle overlapping changes (current cause of full report text integration test failure).
