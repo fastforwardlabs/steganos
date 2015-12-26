@@ -13,6 +13,18 @@ def test_change_was_made():
     # then
     assert result
 
+def test_unmade_change_followed_by_made_change():
+    # given
+    original_text = 'abcdef'
+    encoded_text = 'abcdXXX'
+    change = (3, 5, 'YYYY')
+
+    # when
+    result = steganos_decode.change_was_made(encoded_text, original_text, change)
+
+    # then
+    assert not result
+
 def test_change_detected_encoded_when_text_ends_mid_change():
     # given
     original_text = 'abcdef'
