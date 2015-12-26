@@ -35,8 +35,7 @@ def test_global_change_late_in_encoded_text():
     # then
     assert '11?' in result
 
-
-def test_decode():
+def test_encode_and_decode():
     # given
     text = '"I am 9." he said.'
     bits = '01'
@@ -48,7 +47,7 @@ def test_decode():
     # then
     assert bits in result
 
-def test_decode_a_single_bit():
+def test_single_bit():
     # given
     text = '"I am 9." he said.'
     bits = '1'
@@ -60,7 +59,7 @@ def test_decode_a_single_bit():
     # then
     assert '1111' in result
 
-def test_decode_with_bad_origin():
+def test_bad_origin():
     # given
     original_text = 'This is a sentence with a 9.'
     encoded_text = 'This does not match with a 9.'
@@ -68,16 +67,4 @@ def test_decode_with_bad_origin():
     # then
     with pytest.raises(ValueError):
         steganos_decode.decode_full_text(encoded_text, original_text)
-
-def test_encoding_when_digits_appear_before_quotes():
-        # given
-        text = 'Chapter 9 - "Hello!"'
-        bits = '10'
-        encoded_text = steganos_encode.encode(bits, text)
-
-        # when
-        result = steganos_decode.decode_full_text(encoded_text, text)
-
-        # then
-        assert bits in result
 
