@@ -80,5 +80,7 @@ def test_with_sample_fflabs_report():
     result = steganos_decode.decode_full_text(encoded_text, text)
 
     # then
-    assert bits in result
+    capacity = steganos_encode.bit_capacity(text)
+    expected = (bits * int(capacity / len(bits))) + (bits[:capacity % len(bits)])
+    assert expected == result
 
