@@ -37,7 +37,7 @@ def decode_partial_text(encoded_text: str, original_text: str, encoded_range: tu
     :return: The bits decoded from the text. Unretrievable bits are
              returned as question marks.
     """
-    start, end = get_indices(encoded_range, encoded_text, original_text)
+    start, end = encoded_range or get_indices_of_encoded_text(encoded_text, original_text)
 
     branchpoints = get_all_branchpoints(original_text)
     partial_original_text = original_text[start:end]
@@ -46,12 +46,6 @@ def decode_partial_text(encoded_text: str, original_text: str, encoded_range: tu
     changes = get_relevant_changes(branchpoints, start, end)
 
     return get_bits(encoded_text, partial_original_text, branchpoints, changes)
-
-def get_indices(encoded_range, encoded_text, original_text):
-    if encoded_range:
-        return translate_to_positive_indices(original_text, encoded_range)
-    return get_indices_of_encoded_text(encoded_text, original_text)
-
 
 def get_bits(encoded_text: str, original_text: str, branchpoints: list, changes: list):
     bits = ['?'] * len(branchpoints)
@@ -84,9 +78,6 @@ def reindex_changes(changes: list, start: int):
 
 def get_changes_up_to_index(changes: list, index: int):
     return [change for change in changes if change[0] >= 0 and change[1] <= index]
-
-def translate_to_positive_indices(xs, indices: tuple):
-    return tuple(len(xs) + index if index < 0 else index for index in indices)
 
 def get_indices_of_encoded_text(encoded_text: str, original_text: str):
     branchpoints = get_all_branchpoints(original_text)

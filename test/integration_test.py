@@ -24,17 +24,6 @@ def test_local_changes_appear_after_global_changes_in_decoded_bits():
     # then
     assert '?11' in result
 
-def test_global_change_late_in_encoded_text_with_negative_indices():
-    # given
-    text = 'I am 9\t, but I say "I am 8".'
-    encoded_text = steganos_encode.encode('111', text)
-
-    # when
-    result = steganos_decode.decode_partial_text(encoded_text[-11:-1], text, (-5, -1))
-
-    # then
-    assert '11?' in result
-
 def test_global_change_late_in_encoded_text():
     # given
     text = 'I am 9\t, but I say "I am 8"'
