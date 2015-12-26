@@ -52,8 +52,8 @@ def get_single_digit_branchpoint(text: str):
     return [(index, index + 1, numbers[text[index]]) for index in single_digit_indices]
 
 def get_directional_mark_branchpoints(text: str):
-   period_indices = [index for index, char in enumerate(text) if char == '.']
-   return [[(index, index, '\u200f\u200e')] for index in period_indices]
+    period_indices = [index for index, char in enumerate(text) if char == '.']
+    return [[(index, index, '\u200f\u200e')] for index in period_indices]
 
 def get_non_breaking_branchpoints(text: str):
     capital_letter_indices = [index for index, char in enumerate(text) if char.isupper()]
