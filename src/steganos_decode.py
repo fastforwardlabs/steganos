@@ -76,8 +76,8 @@ def reindex_changes(changes: list, start: int):
     return [(change[0] - start, change[1] - start, change[2]) for change in changes]
 
 def get_changes_up_to_index(changes: list, index: int):
-    def change_before_index(change: tuple):
-        return (change[0] >= 0 and change[1] <= index) and not (change[0] == 0 and change[0] == change[1])
+    def change_before_index(change):
+        return change[0] >= 0 and change[0] < index and change[1] > 0 and change[1] <= index
     return [change for change in changes if change_before_index(change)]
 
 def get_indices(encoded_text: str, original_text: str, branchpoints: list):
