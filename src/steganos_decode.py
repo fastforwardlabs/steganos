@@ -50,9 +50,7 @@ def get_bits(encoded_text: str, original_text: str, branchpoints: list, changes:
     bits = ['?'] * len(branchpoints)
     for change in changes:
         if encoded_text[:change[0]] != original_text[:change[0]]:
-            raise ValueError('Encoded text and original text are expected to be identical up to index %d, as '
-                             'changes have been reverted to that point. As they are not identical, the encoded text '
-                             'does not seem to match the original text.' % change[0])
+            raise ValueError('Cannot extract bits from encoded text. It does not match the original text.')
 
         index = branchpoints.index(next(bp for bp in branchpoints if change in bp))
         if bits[index] == '?':
@@ -102,8 +100,7 @@ def get_indices(encoded_text: str, original_text: str, branchpoints: list):
             if reverted_text == partial_text[:len(reverted_text)]:
                 return (start, start + len(reverted_text))
 
-    raise ValueError('Cannot infer the start and end indices of the encoded text relative to the original text.'
-                     ' The encoded text does not seem to match the original text.')
+    raise ValueError('Cannot infer indices of encoded text. It does not match the original text.')
 
 def undo_change(encoded_text: str, original_text: str, change: tuple):
     start, end, change_string = change
