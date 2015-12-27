@@ -88,7 +88,10 @@ def get_indices(encoded_text: str, original_text: str, branchpoints: list):
             partial_changes = reindex_changes(changes, start)
             partial_changes = get_changes_up_to_index(partial_changes, end - start)
 
-            unencoded_text = revert_to_original(encoded_text, partial_text, partial_changes)
+            try:
+                unencoded_text = revert_to_original(encoded_text, partial_text, partial_changes)
+            except ValueError:
+                break
 
             if unencoded_text == partial_text:
                 return (start, end)
@@ -98,6 +101,9 @@ def get_indices(encoded_text: str, original_text: str, branchpoints: list):
 
 def revert_to_original(encoded_text: str, original_text: str, changes: list):
     for change in changes:
+        if encoded_text[:change[0]] != original_text[:change[0]]:
+            raise ValueError('Cannot revert to original.  Original and encoded texts do not match')
+
         if change_was_made(encoded_text, original_text, change):
             encoded_text = undo_change(encoded_text, original_text, change)
     return encoded_text
