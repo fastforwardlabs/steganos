@@ -49,6 +49,18 @@ def test_change_detected_when_encoded_text_starts_mid_change():
     # then
     assert result
 
+def test_change_detected_when_zero_width_change_at_start():
+    # given
+    original_text = 'bcdef'
+    encoded_text = 'Zbcdef'
+    change = (0, 0, 'Z')
+
+    # when
+    result = steganos_decode.change_was_made(encoded_text, original_text, change)
+
+    # then
+    assert result
+
 def test_change_was_not_made():
     # given
     text = 'The same string.'
@@ -143,4 +155,28 @@ def test_get_indices_when_branchpoints_not_executed():
 
     # then
     assert result == (1, 5)
+
+def test_get_indices_when_no_relevant_changes():
+    # given
+    text = 'abcdef'
+    encoded_text = 'bcde'
+    branchpoints = []
+
+    # when
+    result = steganos_decode.get_indices(encoded_text, text, branchpoints)
+
+    # then
+    assert result == (1, 5)
+
+def test_get_indices_multiple_changes():
+    # given
+    text = 'abcdef'
+    encoded_text = 'bcXeY'
+    branchpoints = [[(3, 4, 'X'), (5, 6, 'Y')]]
+
+    # when
+    result = steganos_decode.get_indices(encoded_text, text, branchpoints)
+
+    # then
+    assert result == (1, 6)
 
