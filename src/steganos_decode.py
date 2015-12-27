@@ -100,7 +100,6 @@ def get_indices(encoded_text: str, original_text: str, branchpoints: list):
                 reverted_text = undo_change(reverted_text, partial_text, change)
 
             if reverted_text == partial_text[:len(reverted_text)]:
-                print(start, start + len(reverted_text))
                 return (start, start + len(reverted_text))
 
     raise ValueError('Cannot infer the start and end indices of the encoded text relative to the original text.'
@@ -115,8 +114,8 @@ def undo_change(encoded_text: str, original_text: str, change: tuple):
     remainder = ''
 
     # encoded text starts midway through a change
-    if start == 0 and change_string not in encoded_text:
-        for index in range(len(change_string), 0, -1):
+    if start == 0:
+        for index in range(len(change_string)):
             if change_string[-1 * index:] == encoded_text[:index]:
                 remainder = encoded_text[index:]
                 break
@@ -130,10 +129,10 @@ def change_was_made(encoded_text: str, original_text: str, change: tuple):
     start, _, change_string = change
     end_change = start + len(change_string)
 
-    # encoded text starts in the middle of the change
+    # encoded text starts midway through a change
     if start == 0:
-        for i in range(len(change_string)):
-            if encoded_text[:i] == change_string[-1 * i:]:
+        for index in range(len(change_string)):
+            if change_string[-1 * index:] == encoded_text[:index]:
                 return True
 
     # change end_of_change if encoded text ends in the middle of the change
