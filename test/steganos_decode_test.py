@@ -180,3 +180,15 @@ def test_get_indices_multiple_changes():
     # then
     assert result == (1, 6)
 
+def test_get_indices_multiple_changes_with_one_unmade():
+    # given
+    text = 'abcdef'
+    encoded_text = 'bcXef'
+    branchpoints = [[(3, 4, 'X'), (5, 6, 'Y')]]
+
+    # when
+    result = steganos_decode.get_indices(encoded_text, text, branchpoints)
+
+    # then
+    assert result == (1, 6)
+
