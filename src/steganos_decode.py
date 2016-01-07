@@ -39,14 +39,10 @@ def decode_partial_text(encoded_text: str, original_text: str, encoded_range: tu
     """
     branchpoints = get_all_branchpoints(original_text)
     start, end = encoded_range or get_indices(encoded_text, original_text, branchpoints)
-    partial_original_text = original_text[start:end]
-
+    original_text = original_text[start:end]
     branchpoints = reindex_branchpoints(branchpoints, start)
     changes = get_relevant_changes(branchpoints, start, end)
 
-    return get_bits(encoded_text, partial_original_text, branchpoints, changes)
-
-def get_bits(encoded_text: str, original_text: str, branchpoints: list, changes: list):
     bits = ['?'] * len(branchpoints)
     for change in changes:
         if encoded_text[:change[0]] != original_text[:change[0]]:
