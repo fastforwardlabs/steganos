@@ -80,9 +80,11 @@ def example_branchpoints(text: str):
     return [[(index - 2, index - 1, 'y'), (index, index + 1, 'x')] for index in a_indices]
 ```
 
+## Running Tests
+
+Get pytest with `pip install pytest`, then run `py.test test/`.  There are no production dependencies.
 
 # TODO
-- The code contains sample global, local, and unicode branchpoints. These need to be improved and additional branchpoints need to be added.
-- Prevent unicode changes to sensitive items (e.g. urls).
+- The code contains only sample global, ascii, and unicode branchpoints.
+- Prevent unicode changes to sensitive items (e.g. urls, code samples).
 - Handle overlapping changes
-- Automatically convert changes to the smallest possible range of indices, even when this means splittling up a single change into two or more changes.
