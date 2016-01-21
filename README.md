@@ -86,6 +86,5 @@ Get pytest with `pip install pytest`, then run `py.test test/`.  There are no pr
 
 # TODO
 - The code contains only sample global, ascii, and unicode branchpoints.
-- Prevent unicode changes to sensitive items (e.g. urls, code samples).
 - Handle overlapping changes.
 - Enable flag for 'ascii-only' branchpoints.

@@ -116,3 +116,53 @@ def test_non_breaking_branchpoints(text, branchpoints):
     # then
     assert result == branchpoints
 
+def test_filter_branchpoints_on_markdown():
+    readme = """
+        this is
+
+        ```.py
+        # comment
+        def func():
+            'single quote'
+            "quote"
+        python code
+        ```
+
+        and but wait
+
+        ```.js
+        var some_func = function(a, b) {
+            console.log("This string can break anything");
+        }
+        ```
+
+        and the over
+    """
+
+    assert [(26, 146), (181, 306)] == find_unchangeable_areas(readme)
+
+def test_filter_branchpoints_on_urls():
+    url = """
+       Here is a url: http://code.google.com/events?product=browser
+       Here is another url: https://some.url
+    """
+
+    assert [(23, 68), (97, 113)] == find_unchangeable_areas(url)
+
+@pytest.mark.parametrize('branchpoint, expected', [
+    ([(1, 3, 'ab')], []),
+    ([(3, 5, 'ab')], []),
+    ([(1, 6, 'ab')], []),
+    ([(1, 3, 'ab'), (8, 10, 'xy')], []),
+    ([(1, 3, 'ab'), (5, 6, 'ab')], [(5, 6, 'ab')])
+])
+def test_changeable_part_of_branchpoints(branchpoint, expected):
+    # given
+    unchangeable_areas = [(2, 4), (7, 9)]
+
+    # when
+    result = changeable_part(branchpoint, unchangeable_areas)
+
+    # then
+    assert result == expected
+

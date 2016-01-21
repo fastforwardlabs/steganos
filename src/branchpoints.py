@@ -5,7 +5,27 @@ def get_all_branchpoints(text: str):
     # retrieved from any contiguous piece of encoded text
     sorted_branchpoints = sort_branchpoints(ascii_branchpoints(text) + unicode_branchpoints(text))
     branchpoints = global_branchpoints(text) + sorted_branchpoints
+
+    unchangeable_areas = find_unchangeable_areas(text)
+    changeable_branchpoints = [changeable_part(bp, unchangeable_areas) for bp in branchpoints]
+    filtered_branchpoints = [bp for bp in changeable_branchpoints if bp]
+
     return remove_redundant_characters(text, branchpoints)
+
+def changeable_part(branchpoint: list, unchangeable_areas):
+    for start, end in unchangeable_areas:
+        for change in branchpoint:
+            if ((change[0] > start and change[0] < end) or
+                    (change[1] > start and change[1] < end) or
+                    (change[0] < start and change[1] > end)):
+                branchpoint = [c for c in branchpoint if c != change]
+    return branchpoint
+
+def find_unchangeable_areas(text: str):
+    code_markdown = iter([m.start() for m in re.finditer('```', text)])
+    code_markdown = list(zip(code_markdown, code_markdown))
+    url = [(m.start(), m.end()) for m in re.finditer('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', text)]
+    return code_markdown + url
 
 def ascii_branchpoints(text: str):
     return get_tab_branchpoints(text) + get_contraction_branchpoints(text)
