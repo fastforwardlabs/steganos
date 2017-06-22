@@ -9,7 +9,7 @@ a single bit.  Each branch point is represented by a list of 'changes'.
 """
 from .branchpoints import get_all_branchpoints
 
-def decode_full_text(encoded_text: str, original_text: str):
+def decode_full_text(encoded_text, original_text):
     """
     Decodes bits from encoded text. Use this function if you have
     the full encoded text, otherwise use decode_partial_text function.
@@ -22,7 +22,7 @@ def decode_full_text(encoded_text: str, original_text: str):
     encoded_range = (0, len(original_text))
     return decode_partial_text(encoded_text, original_text, encoded_range)
 
-def decode_partial_text(encoded_text: str, original_text: str, encoded_range: tuple=None):
+def decode_partial_text(encoded_text, original_text, encoded_range=None):
     """
     Decodes bits from encoded text. Use this function if you do not have
     the full partial text.
@@ -57,7 +57,7 @@ def decode_partial_text(encoded_text: str, original_text: str, encoded_range: tu
 
     return ''.join(bits)
 
-def get_relevant_changes(branchpoints: list, start: int, end: int):
+def get_relevant_changes(branchpoints, start, end):
     index = end - start
     def change_is_relevant(change):
         return change[0] >= 0 and change[0] < index and change[1] > 0 and change[1] <= index
@@ -66,13 +66,13 @@ def get_relevant_changes(branchpoints: list, start: int, end: int):
     changes.sort()
     return changes
 
-def reindex_branchpoints(branchpoints: list, start: int):
+def reindex_branchpoints(branchpoints, start):
     return [reindex_changes(bp, start) for bp in branchpoints]
 
-def reindex_changes(changes: list, start: int):
+def reindex_changes(changes, start):
     return [(change[0] - start, change[1] - start, change[2]) for change in changes]
 
-def get_indices(encoded_text: str, original_text: str, branchpoints: list):
+def get_indices(encoded_text, original_text, branchpoints):
     changes = sum(branchpoints, [])
     changes.sort()
 
@@ -98,7 +98,7 @@ def get_indices(encoded_text: str, original_text: str, branchpoints: list):
 
     raise ValueError('Cannot infer indices of encoded text. It does not match the original text.')
 
-def undo_change(encoded_text: str, original_text: str, change: tuple):
+def undo_change(encoded_text, original_text, change):
     start, end, change_string = change
 
     beginning = encoded_text[:start]
@@ -118,7 +118,7 @@ def undo_change(encoded_text: str, original_text: str, change: tuple):
 
     return beginning + original_string + remainder
 
-def change_was_made(encoded_text: str, original_text: str, change: tuple):
+def change_was_made(encoded_text, original_text, change):
     start, _, change_string = change
     end_change = start + len(change_string)
 

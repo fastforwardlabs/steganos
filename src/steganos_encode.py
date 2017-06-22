@@ -1,12 +1,12 @@
 from .branchpoints import get_all_branchpoints
 
-def bit_capacity(text: str):
+def bit_capacity(text):
     """
     Returns the number of bits that can be encoded in a given string.
     """
     return len(get_all_branchpoints(text))
 
-def encode(bits: str, text: str):
+def encode(bits, text):
     """
     Encodes the provided bits into the given text.
 
@@ -44,17 +44,17 @@ def encode(bits: str, text: str):
     active_branchpoints = filter_by_bits(branchpoints, repeated_bits)
     return execute_branchpoints(active_branchpoints, text)
 
-def repeat(xs, length: int):
+def repeat(xs, length):
     return xs * int(length / len(xs)) + xs[:length % len(xs)]
 
-def filter_by_bits(xs, bits: str):
+def filter_by_bits(xs, bits):
     return [x for x, flag in zip(xs, bits) if flag == '1']
 
-def execute_branchpoints(branchpoints: list, text: str):
+def execute_branchpoints(branchpoints, text):
     changes = sum(branchpoints, [])
     return make_changes(text, changes)
 
-def make_changes(text: str, changes: list):
+def make_changes(text, changes):
     """ Assumes changes never overlap."""
     # By executing the last changes first, we guarantee that
     # the indices of each change remain accurate.
