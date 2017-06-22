@@ -99,6 +99,18 @@ parameter to the decode function. In addition to returning with the proper
 number of bits, this also will give possible increased accuracy for partial
 decodings.
 
+
+```py
+bits = '101'
+original_text = '"Hello," he said.\n\t"I am 9 years old"'
+encoded_text = steganos.encode(bits, original_text)
+partial_text = encoded_text[14:26]
+recovered_bits = steganos.decode_partial_text(partial_text, original_text)
+recovered_bits_limit = steganos.decode_partial_text(partial_text, original_text, message_bits=3)
+# recovered_bits == '1??101'
+# recovered_bits_limit = '101'
+```
+
 # Extending Steganos
 
 Steganos **encoding** works by generating 'branchpoints' for a given original
