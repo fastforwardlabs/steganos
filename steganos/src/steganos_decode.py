@@ -10,21 +10,26 @@ a single bit.  Each branch point is represented by a list of 'changes'.
 from .branchpoints import get_all_branchpoints
 
 
-def decode_full_text(encoded_text, original_text):
+def decode_full_text(encoded_text, original_text, message_bits=None):
     """
     Decodes bits from encoded text. Use this function if you have
     the full encoded text, otherwise use decode_partial_text function.
 
     :param encoded_text: A string that has been encoded with information.
     :param original_text: The text before encoding.
+    :param message_bits: number of bits in message. If this isn't provided, the
+                         number decoded bits will be the full capacity of the
+                         text.
     :return: The bits decoded from the text. Unretrievable bits are
              returned as question marks.
     """
     encoded_range = (0, len(original_text))
-    return decode_partial_text(encoded_text, original_text, encoded_range)
+    return decode_partial_text(encoded_text, original_text, encoded_range,
+                               message_bits)
 
 
-def decode_partial_text(encoded_text, original_text, encoded_range=None):
+def decode_partial_text(encoded_text, original_text, encoded_range=None,
+                        message_bits=None):
     """
     Decodes bits from encoded text. Use this function if you do not have
     the full partial text.
@@ -36,17 +41,21 @@ def decode_partial_text(encoded_text, original_text, encoded_range=None):
                          of the piece of the original text that maps to
                          the partial encoded text. If this parameter is
                          not provided, it will be inferred.
+    :param message_bits: number of bits in message. If this isn't provided, the
+                         number decoded bits will be the full capacity of the
+                         text.
     :return: The bits decoded from the text. Unretrievable bits are
              returned as question marks.
     """
     branchpoints = get_all_branchpoints(original_text)
+    message_bits = message_bits or len(branchpoints)
     start, end = encoded_range or get_indices(encoded_text, original_text,
                                               branchpoints)
     original_text = original_text[start:end]
     branchpoints = reindex_branchpoints(branchpoints, start)
     changes = get_relevant_changes(branchpoints, start, end)
 
-    bits = ['?'] * len(branchpoints)
+    bits = ['?'] * message_bits
     for change in changes:
         if encoded_text[:change[0]] != original_text[:change[0]]:
             raise ValueError('Cannot extract bits from encoded text. '
@@ -54,13 +63,14 @@ def decode_partial_text(encoded_text, original_text, encoded_range=None):
 
         index = branchpoints.index(next(bp for bp in branchpoints
                                         if change in bp))
-        if bits[index] == '?':
-            bits[index] = ('1'
-                           if change_was_made(encoded_text, original_text,
-                                              change)
-                           else '0')
+        bindex = index % message_bits
+        if bits[bindex] == '?':
+            bits[bindex] = ('1'
+                            if change_was_made(encoded_text, original_text,
+                                               change)
+                            else '0')
 
-        if bits[index] == '1':
+        if bits[bindex] == '1':
             encoded_text = undo_change(encoded_text, original_text, change)
 
     return ''.join(bits)
