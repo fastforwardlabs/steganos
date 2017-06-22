@@ -136,12 +136,12 @@ you'll have to get more creative.
 
 For example, we put five branchpoints in the following to produce a 5-bit message:
 
-Ralphie set his secret decoder ring to "B" and "twelve" to decode the message. It said, "Be sure to drink your Ovaltine". [00000]
-Ralphie set his secret decoder ring to 'B' and 'twelve' to decode the message. It said, "Be sure to drink your Ovaltine". [10000]
-Ralphie set his secret decoder ring to "B" and "12" to decode the message. It said, "Be sure to drink your Ovaltine". [01000]
-Ralphie set his secret decoder ring to "B" and "twelve" to decode the message. It said "Be sure to drink your Ovaltine". [00100]
-Ralphie set his secret decoder ring to "B" and "twelve" to decode the message. It said, 'Be sure to drink your Ovaltine'. [00010]
-Ralphie set his secret decoder ring to "B" and "twelve" to decode the message. It said, "be sure to drink your Ovaltine". [00001]
+Ralphie set his secret decoder ring to "B" and "twelve" to decode the message. It said, "Be sure to drink your Ovaltine". [00000]  
+Ralphie set his secret decoder ring to 'B' and 'twelve' to decode the message. It said, "Be sure to drink your Ovaltine". [10000]  
+Ralphie set his secret decoder ring to "B" and "12" to decode the message. It said, "Be sure to drink your Ovaltine". [01000]  
+Ralphie set his secret decoder ring to "B" and "twelve" to decode the message. It said "Be sure to drink your Ovaltine". [00100]  
+Ralphie set his secret decoder ring to "B" and "twelve" to decode the message. It said, 'Be sure to drink your Ovaltine'. [00010]  
+Ralphie set his secret decoder ring to "B" and "twelve" to decode the message. It said, "be sure to drink your Ovaltine". [00001]  
 Ralphie set his secret decoder ring to 'B' and '12' to decode the message. It said 'be sure to drink your Ovaltine'. [11111]
 
 ## Introducing: Steganos
