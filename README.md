@@ -9,8 +9,8 @@ To find out how many bits can be encoded into a string:
 ```.py
 import steganos
 
-some_text = '"Hello," he said.\n\t"I am 9 years old"'
-capacity = steganos.bit_capacity(some_text)
+original_text = '"Hello," he said.\n\t"I am 9 years old"'
+capacity = steganos.bit_capacity(original_text)
 ```
 
 To encode bits into a string:
@@ -19,8 +19,8 @@ To encode bits into a string:
 import steganos
 
 bits = '101'
-some_text = '"Hello," he said.\n\t"I am 9 years old"'
-encoded_text = steganos.encode(bits, some_text)
+original_text = '"Hello," he said.\n\t"I am 9 years old"'
+encoded_text = steganos.encode(bits, original_text)
 ```
 
 ## Decoding
@@ -33,9 +33,10 @@ If you have the complete encoded text, use the decode_full_text function:
 import steganos
 
 bits = '101'
-some_text = '"Hello," he said.\n\t"I am 9 years old"'
-encoded_text = steganos.encode(bits, some_text)
-recovered_bits = steganos.decode_full_text(encoded_text, original_text)  # recovered_bits == '101'
+original_text = '"Hello," he said.\n\t"I am 9 years old"'
+encoded_text = steganos.encode(bits, original_text)
+recovered_bits = steganos.decode_full_text(encoded_text, original_text)
+# recovered_bits == '101'
 ```
 
 If you have on part of the encoded text, you can use the decode_partial_text function.  If you know the indices of the _original text_ that the partial encoded text corresponds to, you can pass those in as a tuple (start_index, end_index) as the final parameter.  Otherwise, they will be inferred.
@@ -44,10 +45,11 @@ If you have on part of the encoded text, you can use the decode_partial_text fun
 import steganos
 
 bits = '101'
-some_text = '"Hello," he said.\n\t"I am 9 years old"'
-encoded_text = steganos.encode(bits, some_text)
-partial_text = encoded_text[2:8]
-recovered_bits = steganos.decode_partial_text(encoded_text, original_text)
+original_text = '"Hello," he said.\n\t"I am 9 years old"'
+encoded_text = steganos.encode(bits, original_text)
+partial_text = encoded_text[:8]
+recovered_bits = steganos.decode_partial_text(partial_text, original_text)
+# recovered_bits == '1?1'
 ```
 
 # Extending Steganos
