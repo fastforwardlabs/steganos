@@ -52,7 +52,7 @@ bits = '101'
 original_text = '"Hello," he said.\n\t"I am 9 years old"'
 encoded_text = steganos.encode(bits, original_text)
 recovered_bits = steganos.decode_full_text(encoded_text, original_text)
-# recovered_bits == '101'
+# recovered_bits.startswith('101') == True
 ```
 
 If you have on part of the encoded text, you can use the decode_partial_text function.  If you know the indices of the _original text_ that the partial encoded text corresponds to, you can pass those in as a tuple (start_index, end_index) as the final parameter.  Otherwise, they will be inferred.
@@ -65,12 +65,53 @@ original_text = '"Hello," he said.\n\t"I am 9 years old"'
 encoded_text = steganos.encode(bits, original_text)
 partial_text = encoded_text[:8]
 recovered_bits = steganos.decode_partial_text(partial_text, original_text)
-# recovered_bits == '1?1'
+# recovered_bits.startswith('1?1') == True
 ```
+
+## Sending messages
+
+In order to help send encoded messages as opposed to just storing bytes, we
+provide `bytes_to_binary` and `binary_to_bytes` in order to encode/decode a
+message to and from steganos' binary format.
+
+```.py
+import steganos
+
+message = b'Hello World!'
+original_text = open('text.txt').read()
+
+bits = steganos.bytes_to_binary(message)
+encoded_text = steganos.encode(bits, original_text)
+
+recovered_bits = steganos.decode_full_text(encoded_text, original_text)
+recovered_msg = steganos.binary_to_bytes(recovered_bits)
+
+# recovered_msg.startswith(b'Hello World!') == True
+```
+
+## A note on message length
+
+By default, and decoded message will be the maximum length encodable within the
+source document. That is to say, if you have a document that can store 8 bits
+and your message is just two bits, the decoded result will be your two bits
+repeated four times. This can be solved by providing the `message_bits`
+parameter to the decode function. In addition to returning with the proper
+number of bits, this also will give possible increased accuracy for partial
+decodings.
 
 # Extending Steganos
 
-Steganos **encoding** works by generating 'branchpoints' for a given original text.  Each branchpoint represents a change to the text that does not change the meaning of the text.  Each branchpoint is 'executed', which means that the change it defines is made, according to the bits we are trying to encode.  For example, if we want to encode '10' in a text for which we can generate two branchpoints, the first of those is executed and the second is not.  Note that if there are more branchpoints available than there are bits to encode, the bits are repeated to make use of the spare capacity.  For example, if we want to encode '10' in a text with 4 branchpoints, `steganos.encode` automatically encodes '1010', improving our ability to retrieve the encoded information from an incomplete encoded text.
+Steganos **encoding** works by generating 'branchpoints' for a given original
+text.  Each branchpoint represents a change to the text that does not change the
+meaning of the text.  Each branchpoint is 'executed', which means that the
+change it defines is made, according to the bits we are trying to encode.  For
+example, if we want to encode '10' in a text for which we can generate two
+branchpoints, the first of those is executed and the second is not.  Note that
+if there are more branchpoints available than there are bits to encode, the bits
+are repeated to make use of the spare capacity.  For example, if we want to
+encode '10' in a text with 4 branchpoints, `steganos.encode` automatically
+encodes '1010', improving our ability to retrieve the encoded information from
+an incomplete encoded text.
 
 Steganos **decoding** works by figuring out which branchpoints were executed on a given text.  It does this by comparing the encoded text to the original.
 

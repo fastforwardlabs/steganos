@@ -163,3 +163,19 @@ def change_was_made(encoded_text, original_text, change):
         end_change = min(len(encoded_text), len(original_text))
 
     return encoded_text[start:end_change] == change_string[:end_change - start]
+
+
+def binary_to_bytes(binary):
+    return bytes(chunk_binary_str_to_bytes(binary))
+
+
+def bytes_to_binary(message):
+    return ''.join(bin(i)[2:].rjust(8, '0') for i in message)
+
+
+def chunk_binary_str_to_bytes(binary):
+    for i in range(0, len(binary), 8):
+        try:
+            yield int(binary[i:i+8], base=2)
+        except ValueError:
+            yield ord('?')
