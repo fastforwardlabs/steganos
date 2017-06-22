@@ -2,6 +2,22 @@
 
 This is a library to encode bits into text.
 
+## Installation
+
+You can install from source by doing,
+
+```bash
+$ git clone git@github.com:fastforwardlabs/steganos.git
+$ cd steganos
+$ python setup.py install
+```
+
+or simply,
+
+```bash
+$ pip install git+https://github.com/fastforwardlabs/steganos.git
+```
+
 ## Encoding
 
 To find out how many bits can be encoded into a string:
