@@ -1,10 +1,12 @@
 from .branchpoints import get_all_branchpoints
 
+
 def bit_capacity(text):
     """
     Returns the number of bits that can be encoded in a given string.
     """
     return len(get_all_branchpoints(text))
+
 
 def encode(bits, text):
     """
@@ -37,22 +39,28 @@ def encode(bits, text):
     branchpoints = get_all_branchpoints(text)
 
     if len(branchpoints) < len(bits):
-        raise ValueError('Attempting to encode %d bits into a text with a bit capacity of %d.'
-                         % (len(bits), len(branchpoints)))
+        raise ValueError(
+            ('Attempting to encode {} bits into a text with a bit '
+             'capacity of {}.').format(len(bits), len(branchpoints))
+        )
 
     repeated_bits = repeat(bits, len(branchpoints))
     active_branchpoints = filter_by_bits(branchpoints, repeated_bits)
     return execute_branchpoints(active_branchpoints, text)
 
+
 def repeat(xs, length):
     return xs * int(length / len(xs)) + xs[:length % len(xs)]
+
 
 def filter_by_bits(xs, bits):
     return [x for x, flag in zip(xs, bits) if flag == '1']
 
+
 def execute_branchpoints(branchpoints, text):
     changes = sum(branchpoints, [])
     return make_changes(text, changes)
+
 
 def make_changes(text, changes):
     """ Assumes changes never overlap."""
@@ -63,4 +71,3 @@ def make_changes(text, changes):
         start, end, change_string = change
         text = text[:start] + change_string + text[end:]
     return text
-

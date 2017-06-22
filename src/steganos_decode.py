@@ -9,6 +9,7 @@ a single bit.  Each branch point is represented by a list of 'changes'.
 """
 from .branchpoints import get_all_branchpoints
 
+
 def decode_full_text(encoded_text, original_text):
     """
     Decodes bits from encoded text. Use this function if you have
@@ -21,6 +22,7 @@ def decode_full_text(encoded_text, original_text):
     """
     encoded_range = (0, len(original_text))
     return decode_partial_text(encoded_text, original_text, encoded_range)
+
 
 def decode_partial_text(encoded_text, original_text, encoded_range=None):
     """
@@ -38,7 +40,8 @@ def decode_partial_text(encoded_text, original_text, encoded_range=None):
              returned as question marks.
     """
     branchpoints = get_all_branchpoints(original_text)
-    start, end = encoded_range or get_indices(encoded_text, original_text, branchpoints)
+    start, end = encoded_range or get_indices(encoded_text, original_text,
+                                              branchpoints)
     original_text = original_text[start:end]
     branchpoints = reindex_branchpoints(branchpoints, start)
     changes = get_relevant_changes(branchpoints, start, end)
@@ -46,31 +49,43 @@ def decode_partial_text(encoded_text, original_text, encoded_range=None):
     bits = ['?'] * len(branchpoints)
     for change in changes:
         if encoded_text[:change[0]] != original_text[:change[0]]:
-            raise ValueError('Cannot extract bits from encoded text. It does not match the original text.')
+            raise ValueError('Cannot extract bits from encoded text. '
+                             'It does not match the original text.')
 
-        index = branchpoints.index(next(bp for bp in branchpoints if change in bp))
+        index = branchpoints.index(next(bp for bp in branchpoints
+                                        if change in bp))
         if bits[index] == '?':
-            bits[index] = '1' if change_was_made(encoded_text, original_text, change) else '0'
+            bits[index] = ('1'
+                           if change_was_made(encoded_text, original_text,
+                                              change)
+                           else '0')
 
         if bits[index] == '1':
             encoded_text = undo_change(encoded_text, original_text, change)
 
     return ''.join(bits)
 
+
 def get_relevant_changes(branchpoints, start, end):
     index = end - start
+
     def change_is_relevant(change):
-        return change[0] >= 0 and change[0] < index and change[1] > 0 and change[1] <= index
+        return (change[0] >= 0 and change[0] < index and change[1] > 0 and
+                change[1] <= index)
     changes = sum(branchpoints, [])
     changes = [change for change in changes if change_is_relevant(change)]
     changes.sort()
     return changes
 
+
 def reindex_branchpoints(branchpoints, start):
     return [reindex_changes(bp, start) for bp in branchpoints]
 
+
 def reindex_changes(changes, start):
-    return [(change[0] - start, change[1] - start, change[2]) for change in changes]
+    return [(change[0] - start, change[1] - start, change[2])
+            for change in changes]
+
 
 def get_indices(encoded_text, original_text, branchpoints):
     changes = sum(branchpoints, [])
@@ -79,7 +94,8 @@ def get_indices(encoded_text, original_text, branchpoints):
     for start in range(len(original_text)):
         partial_text = original_text[start:]
         partial_changes = reindex_changes(changes, start)
-        partial_changes = [change for change in partial_changes if change[0] >= 0]
+        partial_changes = [change for change in partial_changes
+                           if change[0] >= 0]
 
         # in the case that there are no changes
         if encoded_text == partial_text[:len(encoded_text)]:
@@ -91,12 +107,15 @@ def get_indices(encoded_text, original_text, branchpoints):
                 break
 
             if change_was_made(reverted_text, partial_text, change):
-                reverted_text = undo_change(reverted_text, partial_text, change)
+                reverted_text = undo_change(reverted_text, partial_text,
+                                            change)
 
             if reverted_text == partial_text[:len(reverted_text)]:
                 return (start, start + len(reverted_text))
 
-    raise ValueError('Cannot infer indices of encoded text. It does not match the original text.')
+    raise ValueError('Cannot infer indices of encoded text. '
+                     'It does not match the original text.')
+
 
 def undo_change(encoded_text, original_text, change):
     start, end, change_string = change
@@ -118,6 +137,7 @@ def undo_change(encoded_text, original_text, change):
 
     return beginning + original_string + remainder
 
+
 def change_was_made(encoded_text, original_text, change):
     start, _, change_string = change
     end_change = start + len(change_string)
@@ -133,4 +153,3 @@ def change_was_made(encoded_text, original_text, change):
         end_change = min(len(encoded_text), len(original_text))
 
     return encoded_text[start:end_change] == change_string[:end_change - start]
-
