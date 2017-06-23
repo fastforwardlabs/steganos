@@ -31,10 +31,14 @@ def changeable_part(branchpoint, unchangeable_areas):
 def find_unchangeable_areas(text):
     url_re = re.compile('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|'
                         '(?:%[0-9a-fA-F][0-9a-fA-F]))+')
-    code_markdown = iter([m.start() for m in re.finditer('```', text)])
-    code_markdown = list(zip(code_markdown, code_markdown))
-    url = [(m.start(), m.end()) for m in url_re.finditer(text)]
-    return code_markdown + url
+    code_re = re.compile('```.+?```', re.DOTALL)
+    markdown_re = re.compile('[!]?\[[^\]]+?\]\([^)]+?\)', re.MULTILINE)
+
+    url = [m.span() for m in url_re.finditer(text)]
+    code_markdown = [m.span() for m in code_re.finditer(text)]
+    markdown_links = [m.span() for m in markdown_re.finditer(text)]
+
+    return code_markdown + url + markdown_links
 
 
 def ascii_branchpoints(text):
@@ -103,7 +107,8 @@ def get_single_digit_branchpoint(text):
 
 
 def get_directional_mark_branchpoints(text):
-    period_indices = [index for index, char in enumerate(text) if char == '.']
+    period_indices = [index for index, char in enumerate(text[:-1])
+                      if char == '.' and text[index+1].isspace()]
     return [[(index, index, '\u200f\u200e')] for index in period_indices]
 
 
