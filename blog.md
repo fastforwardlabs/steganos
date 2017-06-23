@@ -79,7 +79,7 @@ Fortunately for us, there's more room for hiding information these days than
 there used to be. We'll see how we can take advantage of all those extra
 characters to find branchpoints in any document.
 
-## Identifying branchpoints
+### Identifying branchpoints
 
 Some Unicode characters are more obviously useful than others. Take, for
 instance, the [zero width space](https://codepoints.net/U+200B). It has some
@@ -96,7 +96,7 @@ extra​ information,​ and​ doesn't​ visibly​
 change​ the​ text​ document​ at​ all.​ In​
 fact,​ there's​ a​ zero-width​ space​ in​
 front​ of​ every​ space​ in​ this​
-paragraph.​ Bet​ you​ couldn't​ tell.​
+paragraph.​ Bet​ you​ couldn't​ tell.
 
 This means we can already treat every normal single space as a branch point,
 where we can choose whether or not to place a zero width space in front of it.
@@ -110,6 +110,8 @@ When you have 120,000 characters, some of them are bound to look the same.
 Here's an [English character](https://codepoints.net/U+0041) A, and here's a
 [Greek character](https://codepoints.net/U+0391) Α. See the difference?
 
+![](./images/confusables.png)
+
 Similar characters like these, called 'confusables', are recognized as being
 dangerous enough that all modern browsers often some protection against letting
 you visit spoofed urls. Think you're going to www.yahoo.com (all english
@@ -120,7 +122,7 @@ Here's a great unicode
 [resource](http://unicode.org/cldr/utility/confusables.jsp?a=fast+forward+labs&r=None)
 for identifying confusables.
 
-![](./images/confusables.png)
+![](./images/unicode_url.png)
 
 Used judiciously, there are plenty of confusables that are, well, suitably
 confusing. Here are a few rules of thumb: simpler letters are more easily
@@ -177,10 +179,10 @@ well as which branchpoints were available to steganos when the message was
 encoded.
 
 As an example, using the [current
-version](http://github.com/fastforwardlabs/steganos/tree/d3b8c]) of steganos, we
-can encode 198 bits into this text. If we are using this for user-identification
+version](http://github.com/fastforwardlabs/steganos/tree/2378a]) of steganos, we
+can encode 1756 bits into this text. If we are using this for user-identification
 and expect to always see leaks of the full document, that means we can track
-10^59 users (ie: vastly more than the number of people who have ever existed).
+10^529 users (ie: vastly more than the number of people who have ever existed).
 
 
 ```.py
@@ -200,6 +202,21 @@ partial_text = encoded_text[:8]  # only use 18% of the text
 recovered_bits = steganos.decode_partial_text(partial_text, original_text,
                                               message_bits=3)
 # recovered_bits == '1?1'
+```
+
+As an example, below is the opening to Star Wars with and without a message
+hidden inside of it. Do you know which is the original?
+
+```
+It​ is a period of civil​ war. Rebel​ spaceships, striking​ from​ a hidden base, have​ won their first​ victory​ against the evil​ Galactic​ Empire‏‎.
+D⁠uring the battle, Rebel spies​ managed to​ steal​ secret plans​ to the​ E⁠mpire's ultimate​ weapon, the D⁠EA⁠TH ST⁠A⁠R, an​ armored space station with enough​ power​ to destroy an​ entire planet‏‎.
+Pursued​ by the​ Empire's sinister​ agents, P⁠rincess L⁠eia​ races​ home aboard​ her starship, custodian of the​ stolen​ plans that can save her​ people and​ restore​ freedom​ to the galaxy‏‎...‏‎.
+```
+
+```
+It is a period of civil war. Rebel spaceships, striking from a hidden base, have won their first victory against the evil Galactic Empire.
+During the battle, Rebel spies managed to steal secret plans to the Empire's ultimate weapon, the DEATH STAR, an armored space station with enough power to destroy an entire planet.
+Pursued by the Empire's sinister agents, Princess Leia races home aboard her starship, custodian of the stolen plans that can save her people and restore freedom to the galaxy....
 ```
 
 ## Conclusion
@@ -223,3 +240,6 @@ Do you have ideas for other cool branchpoints? Let us know!
 - [Noam](https://github.com/n-s-f) and [Micha](http://github.com/mynameisfiber/)
 
 Thanks to [Manny](https://twitter.com/MannyMoss) for his great edits!
+
+PS: If you want to make sure you _aren't_ being tracked this way, simply make
+sure you only copy the ASCII transliterated version of text!
