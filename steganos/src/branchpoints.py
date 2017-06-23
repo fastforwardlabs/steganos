@@ -213,7 +213,7 @@ def mutually_exclusive_branchpoints(data):
             except IndexError:
                 break
             # check if this endpoint is after the next items start
-            if de[i][1] > de[j][0]:
+            if de[i][1] >= de[j][0]:
                 this_area = de[i][3]
                 next_area = de[j][3]
                 # pick the item with the least "area" in terms of the higher
@@ -225,5 +225,6 @@ def mutually_exclusive_branchpoints(data):
                     to_remove.add(de[j][4])
                 else:
                     to_remove.add(de[i][4])
+                i -= 1
         i += 1
     return [d for i, d in enumerate(data) if i not in to_remove]
