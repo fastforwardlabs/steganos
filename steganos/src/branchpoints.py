@@ -13,7 +13,9 @@ def get_all_branchpoints(text):
                                for bp in branchpoints]
     filtered_branchpoints = [bp for bp in changeable_branchpoints if bp]
 
-    return remove_redundant_characters(text, filtered_branchpoints)
+    nored_branchpoints = remove_redundant_characters(text,
+                                                     filtered_branchpoints)
+    return mutually_exclusive_branchpoints(nored_branchpoints)
 
 
 def changeable_part(branchpoint, unchangeable_areas):
@@ -41,7 +43,8 @@ def ascii_branchpoints(text):
 
 def unicode_branchpoints(text):
     return (get_directional_mark_branchpoints(text) +
-            get_non_breaking_branchpoints(text))
+            get_non_breaking_branchpoints(text) +
+            get_zero_width_space_branchpoints(text))
 
 
 def global_branchpoints(text):
@@ -56,14 +59,23 @@ def get_tab_branchpoints(text):
 
 
 def get_contraction_branchpoints(text):
-    contractions = {
-        "won't": 'will not'
-    }
+    contractions = [
+        ("won't", "will not"),
+        ("can't", "cannot"),
+        ("isn't", "is not"),
+        ("doesn't", "does not"),
+        ("would've", "would have"),
+        ("how'll", "how will"),
+        ("hadn't", "had not"),
+    ]
     branchpoints = []
-    for contraction, long_form in contractions.items():
-        index = text.find(contraction)
-        if index > -1:
-            branchpoints.append([(index, index + len(contraction), long_form)])
+    for contraction, long_form in contractions:
+        for match in re.finditer(contraction, text):
+            start, end = match.span()
+            branchpoints.append([(start, end, long_form)])
+        for match in re.finditer(long_form, text):
+            start, end = match.span()
+            branchpoints.append([(start, end, contraction)])
     return branchpoints
 
 
@@ -98,8 +110,15 @@ def get_directional_mark_branchpoints(text):
 def get_non_breaking_branchpoints(text):
     capital_letter_indices = [index for index, char in enumerate(text)
                               if char.isupper()]
-    return [[(index + 1, index + 1, '\u0083')]
+    return [[(index + 1, index + 1, '\u2060')]
             for index in capital_letter_indices]
+
+
+def get_zero_width_space_branchpoints(text):
+    word_beginnings = [index for index, char in enumerate(text[:-1])
+                       if char.isalpha() and text[index+1].isspace()]
+    return [[(index+1, index+1, '\u200b')]
+            for index in word_beginnings]
 
 
 def remove_redundant_characters(original_text, branchpoints):
@@ -160,3 +179,51 @@ def sort_branchpoints(branchpoints):
     branchpoints.sort(key=first_change)
 
     return branchpoints
+
+
+def branchpoint_area(items):
+    return len(items) * sum(i[1] - i[0] for i in items)
+
+
+def mutually_exclusive_branchpoints(data):
+    """
+    Data is list of lists of intervals. We'd like to keep the most number of
+    high level lists such that none of the intervals intersect.
+
+    This is an approximate, greedy, solution that guarantees no intersection
+    but may not be the optimal solution.  It runs at O(n logn) so that's not
+    bad.
+    """
+    data_expanded = [(*d, branchpoint_area(items), i)
+                     for i, items in enumerate(data)
+                     for d in items]
+    data_expanded.sort(key=lambda item: item[0])
+    to_remove = set()
+    i = 0
+    de = data_expanded
+    while i < len(de) - 1:
+        # make sure current element is not marked for deletion
+        if de[i][4] not in to_remove:
+            # now we make sure the next item to compare against isn't marked
+            # for deletion
+            j = i + 1
+            try:
+                while de[j][4] in to_remove:
+                    j += 1
+            except IndexError:
+                break
+            # check if this endpoint is after the next items start
+            if de[i][1] > de[j][0]:
+                this_area = de[i][3]
+                next_area = de[j][3]
+                # pick the item with the least "area" in terms of the higher
+                # order list of intervals. This is a heuristic to remove long
+                # lists of small intervals. We want those out because they have
+                # a higher probability of intersecting with many other lists of
+                # intervals.
+                if this_area < next_area:
+                    to_remove.add(de[j][4])
+                else:
+                    to_remove.add(de[i][4])
+        i += 1
+    return [d for i, d in enumerate(data) if i not in to_remove]

@@ -1,5 +1,6 @@
 import pytest
 import os
+import gzip
 from ..src import steganos_decode
 from ..src import steganos_encode
 
@@ -9,7 +10,7 @@ def test_when_global_change_out_of_encoded_text():
     encoded_text = steganos_encode.encode('11', text)
 
     # when
-    result = steganos_decode.decode_partial_text(encoded_text[0:9], text, (0, 6))
+    result = steganos_decode.decode_partial_text(encoded_text[0:9], text)
 
     # then
     assert '?1' in result
@@ -20,7 +21,7 @@ def test_local_changes_appear_after_global_changes_in_decoded_bits():
     encoded_text = steganos_encode.encode('111', text)
 
     # when
-    result = steganos_decode.decode_partial_text(encoded_text[0:15], text, (0, 9))
+    result = steganos_decode.decode_partial_text(encoded_text[0:15], text)
 
     # then
     assert '?11' in result
@@ -31,7 +32,7 @@ def test_global_change_late_in_encoded_text():
     encoded_text = steganos_encode.encode('111', text)
 
     # when
-    result = steganos_decode.decode_partial_text(encoded_text[33:], text, (24, 28))
+    result = steganos_decode.decode_partial_text(encoded_text[33:], text)
 
     # then
     assert '11?' in result
@@ -72,15 +73,16 @@ def test_bad_origin():
 def test_with_sample_fflabs_report():
     # given
     bits = '101010101011111111'
-    with open(os.path.dirname(os.path.abspath(__file__)) + '/sample_text.txt') as report:
-        text = report.read()
+    filename = (os.path.dirname(os.path.abspath(__file__)) +
+                '/sample_text.txt.gz')
+    with gzip.open(filename) as book:
+        text = book.read().decode('utf8')
     encoded_text = steganos_encode.encode(bits, text)
 
     # when
-    result = steganos_decode.decode_full_text(encoded_text, text)
+    result = steganos_decode.decode_full_text(encoded_text, text,
+                                              message_bits=len(bits))
 
     # then
-    capacity = steganos_encode.bit_capacity(text)
-    expected = (bits * int(capacity / len(bits))) + (bits[:capacity % len(bits)])
-    assert expected == result
+    assert bits == result
 

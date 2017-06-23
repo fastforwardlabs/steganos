@@ -105,8 +105,8 @@ def test_directional_mark_branchpoints(text, branchpoints):
     assert result == branchpoints
 
 @pytest.mark.parametrize('text, branchpoints', [
-    ('Hello. I am sam.', [[(1, 1, '\u0083')], [(8, 8, '\u0083')]]),
-    ('Capital.', [[(1, 1, '\u0083')]]),
+    ('Hello. I am sam.', [[(1, 1, '\u2060')], [(8, 8, '\u2060')]]),
+    ('Capital.', [[(1, 1, '\u2060')]]),
     ('no caps!', [])
 ])
 def test_non_breaking_branchpoints(text, branchpoints):
