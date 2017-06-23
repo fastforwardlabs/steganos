@@ -58,8 +58,6 @@ def decode_partial_text(encoded_text, original_text, encoded_range=None,
     bits = ['?'] * message_bits
     for change in changes:
         if encoded_text[:change[0]] != original_text[:change[0]]:
-            print("encoded: ", encoded_text[:change[0]])
-            print("originl: ", original_text[:change[0]])
             raise ValueError('Cannot extract bits from encoded text. '
                              'It does not match the original text.')
 
@@ -73,7 +71,6 @@ def decode_partial_text(encoded_text, original_text, encoded_range=None,
                             else '0')
         if bits[bindex] == '1':
             encoded_text = undo_change(encoded_text, original_text, change)
-        print(change)
 
     return ''.join(bits)
 
