@@ -43,7 +43,8 @@ number of 'branchpoints' in the text. These are places where he can make a
 change without altering the grandchild's experience of the recipe, or alerting
 them that something is amiss. One such branch point might be spelling out the
 numbers in the recipe - "ten" instead of "10". Another might be using imperial
-units instead of metric.
+units instead of metric. This type of method is called a [canary
+trap](https://en.wikipedia.org/wiki/Canary_trap).
 
 For each grandchild, he goes through the branchpoints one at a time. If the
 grandchild's ID has a zero at some position, he does not make a change at the
