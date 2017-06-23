@@ -242,4 +242,5 @@ Do you have ideas for other cool branchpoints? Let us know!
 Thanks to [Manny](https://twitter.com/MannyMoss) for his great edits!
 
 PS: If you want to make sure you _aren't_ being tracked this way, simply make
-sure you only copy the ASCII transliterated version of text!
+sure you only copy the ASCII transliterated version of text! In some systems,
+this is done by selecting the "Copy as Plain Text" option.
