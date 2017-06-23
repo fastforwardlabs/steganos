@@ -191,7 +191,7 @@ import steganos
 message = '101'
 original_text = '"Wow!" they said.\n\t"This tool is really #1"'
 
-capacity = steganos.bit_capacity(original_text) # == 6
+capacity = steganos.bit_capacity(original_text) # == 10
 encoded_text = steganos.encode(message, original_text)
 
 recovered_bits = steganos.decode_full_text(encoded_text, original_text,
